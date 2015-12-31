@@ -105,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFocusChanged(final boolean focused) {
                 // your action
+                showClearButton(focused && mSearchView.getText().length() > 0);
             }
         });
 
