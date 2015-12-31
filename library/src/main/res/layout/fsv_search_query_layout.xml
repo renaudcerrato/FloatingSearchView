@@ -19,6 +19,7 @@
         android:layout_marginLeft="12dp"
         android:singleLine="true"
         android:maxLines="1"
+        android:selectAllOnFocus="true"
         android:ellipsize="end"
         android:inputType="textNoSuggestions"
         android:background="@null"/>
