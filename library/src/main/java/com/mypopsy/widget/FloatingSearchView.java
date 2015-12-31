@@ -2,13 +2,13 @@ package com.mypopsy.widget;
 
 import android.animation.LayoutTransition;
 import android.animation.ObjectAnimator;
-import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.res.TypedArray;
 import android.content.res.XmlResourceParser;
+import android.graphics.Canvas;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -19,15 +19,18 @@ import android.support.annotation.MenuRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StyleRes;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.MarginLayoutParamsCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorCompat;
 import android.support.v7.widget.ActionMenuView;
+import android.support.v7.widget.AppCompatEditText;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.Xml;
 import android.view.InflateException;
 import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -35,7 +38,6 @@ import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -103,7 +105,7 @@ public class FloatingSearchView extends RelativeLayout {
         void onFocusChanged(boolean focused);
     }
 
-    final private EditText mSearchInput;
+    final private LogoEditText mSearchInput;
     final private ImageView mNavButtonView;
     final private RecyclerView mRecyclerView;
     final private ViewGroup mSearchContainer;
@@ -115,12 +117,12 @@ public class FloatingSearchView extends RelativeLayout {
     final private RoundRectDrawableWithShadow mSearchBackground;
     final private SuggestionItemDecorator mCardDecorator;
 
-    final private List<Integer> mAlwaysShownMenuViews = new ArrayList<>();
+    final private List<Integer> mHidingMenu = new ArrayList<>();
 
     private OnSearchFocusChangedListener mFocusListener;
     private OnNavigationClickListener mNavigationClickListener;
     private Drawable mBackgroundDrawable;
-    
+
     public FloatingSearchView(Context context) {
         this(context, null);
     }
@@ -139,7 +141,7 @@ public class FloatingSearchView extends RelativeLayout {
 
         inflate(getContext(), R.layout.fsv_floating_search_layout, this);
 
-        mSearchInput = (EditText)findViewById(R.id.fsv_search_text);
+        mSearchInput = (LogoEditText)findViewById(R.id.fsv_search_text);
         mNavButtonView = (ImageView) findViewById(R.id.fsv_search_action_navigation);
         mRecyclerView = (RecyclerView) findViewById(R.id.fsv_suggestions_list);
         mDivider = findViewById(R.id.fsv_suggestions_divider);
@@ -199,6 +201,7 @@ public class FloatingSearchView extends RelativeLayout {
         MarginLayoutParamsCompat.setMarginEnd(searchParams, contentInsetEnd);
 
         // anything else
+        setLogo(a.getDrawable(R.styleable.FloatingSearchView_logo));
         setContentBackgroundColor(a.getColor(R.styleable.FloatingSearchView_fsv_contentBackgroundColor, DEFAULT_CONTENT_COLOR));
         setRadius(a.getDimensionPixelSize(R.styleable.FloatingSearchView_fsv_cornerRadius, ViewUtils.dpToPx(DEFAULT_RADIUS)));
         inflateMenu(a.getResourceId(R.styleable.FloatingSearchView_fsv_menu, 0));
@@ -210,6 +213,8 @@ public class FloatingSearchView extends RelativeLayout {
     }
 
     private void setupViews() {
+
+        mSearchContainer.setLayoutTransition(getDefaultLayoutTransition());
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
             mSearchContainer.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
@@ -231,8 +236,6 @@ public class FloatingSearchView extends RelativeLayout {
 
         setBackgroundDrawable(mBackgroundDrawable);
         mBackgroundDrawable.setAlpha(0);
-
-        mActionMenu.setLayoutTransition(getDefaultMenuLayoutTransition());
 
         if(getNavigationIcon() == null) {
             Drawable icon = new SearchArrowDrawable(getContext());
@@ -284,6 +287,10 @@ public class FloatingSearchView extends RelativeLayout {
         mActionMenu.setBackgroundColor(color);
     }
 
+    public Menu getMenu() {
+        return mActionMenu.getMenu();
+    }
+
     public void setPopupTheme(@StyleRes int resId) {
         mActionMenu.setPopupTheme(resId);
     }
@@ -331,7 +338,7 @@ public class FloatingSearchView extends RelativeLayout {
     public void setHint(CharSequence hint) {
         mSearchInput.setHint(hint);
     }
-    
+
     @Override
     public void setActivated(boolean activated) {
         if(activated == isActivated()) return;
@@ -385,6 +392,14 @@ public class FloatingSearchView extends RelativeLayout {
         mRecyclerView.addItemDecoration(decoration);
     }
 
+    public void setLogo(Drawable drawable) {
+        mSearchInput.setLogo(drawable);
+    }
+
+    public void setLogo(@DrawableRes int resId) {
+        mSearchInput.setLogo(resId);
+    }
+
     public void setNavigationIcon(@DrawableRes int resId) {
         showNavigationIcon(resId != 0);
         mNavButtonView.setImageResource(resId);
@@ -393,6 +408,10 @@ public class FloatingSearchView extends RelativeLayout {
     public void setNavigationIcon(Drawable drawable) {
         showNavigationIcon(drawable != null);
         mNavButtonView.setImageDrawable(drawable);
+    }
+
+    public void showLogo(boolean show) {
+        mSearchInput.showLogo(show);
     }
 
     public void showNavigationIcon(boolean show) {
@@ -410,8 +429,8 @@ public class FloatingSearchView extends RelativeLayout {
         return mRecyclerView.getAdapter();
     }
 
-    protected LayoutTransition getDefaultMenuLayoutTransition() {
-        return new ScaleLayoutTransition();
+    protected LayoutTransition getDefaultLayoutTransition() {
+        return new LayoutTransition();
     }
 
     private void fadeIn(boolean enter) {
@@ -523,12 +542,11 @@ public class FloatingSearchView extends RelativeLayout {
         throw new IllegalStateException();
     }
 
-    private void showMenu(boolean visible) {
-        int count = mActionMenu.getChildCount();
-        for(int i = 0; i < count; i++) {
-            View view = mActionMenu.getChildAt(i);
-            if(!mAlwaysShownMenuViews.contains(view.getId()))
-                view.setVisibility(visible ? View.VISIBLE : View.GONE);
+    private void showMenu(final boolean visible) {
+        Menu menu = getMenu();
+        for(int id: mHidingMenu) {
+            MenuItem item = menu.findItem(id);
+            if(item != null) item.setVisible(visible);
         }
     }
 
@@ -569,9 +587,9 @@ public class FloatingSearchView extends RelativeLayout {
                         TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.MenuItem);
                         int itemShowAsAction = a.getInt(R.styleable.MenuItem_showAsAction, -1);
 
-                        if((itemShowAsAction & MenuItem.SHOW_AS_ACTION_ALWAYS) != 0) {
+                        if((itemShowAsAction & MenuItem.SHOW_AS_ACTION_ALWAYS) == 0) {
                             int itemId = a.getResourceId(R.styleable.MenuItem_android_id, NO_ID);
-                            if(itemId != NO_ID) mAlwaysShownMenuViews.add(itemId);
+                            if(itemId != NO_ID) mHidingMenu.add(itemId);
                         }
                         a.recycle();
                     } else {
@@ -608,47 +626,6 @@ public class FloatingSearchView extends RelativeLayout {
         return icon;
     }
 
-    private static class ScaleLayoutTransition extends LayoutTransition {
-
-        public ScaleLayoutTransition() {
-
-            PropertyValuesHolder pvhScaleInX = PropertyValuesHolder.ofFloat("scaleX", 0, 1);
-            PropertyValuesHolder pvhScaleInY = PropertyValuesHolder.ofFloat("scaleY", 0, 1);
-            PropertyValuesHolder pvhAlphaIn = PropertyValuesHolder.ofFloat("alpha", 0, 1);
-
-            PropertyValuesHolder pvhScaleOutX = PropertyValuesHolder.ofFloat("scaleX", 1, 0);
-            PropertyValuesHolder pvhScaleOutY = PropertyValuesHolder.ofFloat("scaleY", 1, 0);
-            PropertyValuesHolder pvhAlphaOut = PropertyValuesHolder.ofFloat("alpha", 1, 0);
-
-            ObjectAnimator scaleIn = ObjectAnimator.ofPropertyValuesHolder((Object)null, pvhAlphaIn, pvhScaleInX, pvhScaleInY);
-            ObjectAnimator scaleOut = ObjectAnimator.ofPropertyValuesHolder((Object)null, pvhAlphaOut, pvhScaleOutX, pvhScaleOutY);
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-                enableTransitionType(LayoutTransition.CHANGING);
-
-            setAnimator(APPEARING, scaleIn);
-            setDuration(APPEARING, DEFAULT_DURATION_ENTER);
-            setInterpolator(APPEARING, DECELERATE);
-
-            setAnimator(DISAPPEARING, scaleOut);
-            setDuration(DISAPPEARING, DEFAULT_DURATION_EXIT / 2);
-            setInterpolator(DISAPPEARING, ACCELERATE);
-
-            setInterpolator(CHANGE_APPEARING, getInterpolator(APPEARING));
-            setDuration(CHANGE_APPEARING, getDuration(APPEARING));
-
-            setInterpolator(CHANGE_DISAPPEARING, getInterpolator(DISAPPEARING));
-            setDuration(CHANGE_DISAPPEARING, getDuration(DISAPPEARING));
-
-
-            setStartDelay(DISAPPEARING, 0);
-            setStartDelay(CHANGE_APPEARING, 0);
-            setStartDelay(CHANGE_DISAPPEARING, getDuration(DISAPPEARING));
-            setStartDelay(APPEARING, getDuration(CHANGE_APPEARING));
-
-        }
-    }
-
     private static class RecyclerView extends android.support.v7.widget.RecyclerView {
 
         public RecyclerView(Context context) {
@@ -667,6 +644,61 @@ public class FloatingSearchView extends RelativeLayout {
         public boolean onTouchEvent(MotionEvent e) {
             View child = findChildViewUnder(e.getX(), e.getY());
             return child != null && super.onTouchEvent(e);
+        }
+    }
+
+    private static class LogoEditText extends AppCompatEditText {
+
+        private Drawable logo;
+        private boolean logoShown;
+        private boolean dirty;
+
+        public LogoEditText(Context context) {
+            super(context);
+        }
+
+        public LogoEditText(Context context, AttributeSet attrs) {
+            super(context, attrs);
+        }
+
+        public LogoEditText(Context context, AttributeSet attrs, int defStyleAttr) {
+            super(context, attrs, defStyleAttr);
+        }
+
+        public void showLogo(boolean shown) {
+            logoShown = shown;
+        }
+
+        public void setLogo(@DrawableRes int res) {
+            if(res == 0)
+                setLogo(null);
+            else
+                setLogo(ResourcesCompat.getDrawable(getResources(), res, getContext().getTheme()));
+        }
+
+        public void setLogo(Drawable logo) {
+            this.logo = logo;
+            dirty = true;
+        }
+
+        @Override
+        protected void onDraw(Canvas canvas) {
+            if(logoShown && logo != null) {
+                if(dirty) {
+                    updateLogoBounds();
+                    dirty = false;
+                }
+                logo.draw(canvas);
+            }else
+                super.onDraw(canvas);
+        }
+
+        // fit center
+        private void updateLogoBounds() {
+            int logoHeight = Math.min(getHeight(), logo.getIntrinsicHeight());
+            int top = (getHeight() - logoHeight)/2;
+            int logoWidth = (logo.getIntrinsicWidth()*logoHeight)/logo.getIntrinsicHeight();
+            logo.setBounds(0, top, logoWidth, top + logoHeight);
         }
     }
 }

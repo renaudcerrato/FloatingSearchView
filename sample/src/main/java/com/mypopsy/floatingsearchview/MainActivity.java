@@ -34,7 +34,6 @@ public class MainActivity extends AppCompatActivity {
 
     final private Adapter mAdapter = new Adapter(countries);
     private FloatingSearchView mSearchView;
-    private View mClearButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,10 +43,7 @@ public class MainActivity extends AppCompatActivity {
         mSearchView = (FloatingSearchView) findViewById(R.id.search);
         //mSearchView.setItemAnimator(new CustomSuggestionItemAnimator(mSearchView));
         mSearchView.setAdapter(mAdapter);
-
-        // A bit hacky, but IMHO far better than enforcing
-        // any 'clear' button on that FloatingSearchView implementation.
-        mClearButton = mSearchView.findViewById(R.id.menu_clear);
+        mSearchView.showLogo(true);
 
         mSearchView.setOnNavigationClickListener(new FloatingSearchView.OnNavigationClickListener() {
             @Override
@@ -68,12 +64,19 @@ public class MainActivity extends AppCompatActivity {
         mSearchView.setOnMenuItemClickListener(new ActionMenuView.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                if (item.getItemId() == R.id.menu_clear) {
-                    mSearchView.setText(null);
-                    mSearchView.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
-                }else
-                    Toast.makeText(MainActivity.this, item.getTitle(), Toast.LENGTH_SHORT).show();
-
+                switch(item.getItemId()) {
+                    case R.id.menu_clear:
+                        mSearchView.setText(null);
+                        mSearchView.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
+                        break;
+                    case R.id.menu_toggle_icon:
+                        item.setChecked(!item.isChecked());
+                        mSearchView.showNavigationIcon(item.isChecked());
+                        break;
+                    default:
+                        Toast.makeText(MainActivity.this, item.getTitle(), Toast.LENGTH_SHORT).show();
+                        break;
+                }
                 return true;
             }
         });
@@ -86,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
-                showClearButton(s.length() > 0);
+                showClearButton(s.length() > 0 && mSearchView.isActivated());
 
                 mAdapter.items.clear();
                 for (String country : countries)
@@ -104,8 +107,9 @@ public class MainActivity extends AppCompatActivity {
         mSearchView.setOnSearchFocusChangedListener(new FloatingSearchView.OnSearchFocusChangedListener() {
             @Override
             public void onFocusChanged(final boolean focused) {
-                // your action
-                showClearButton(focused && mSearchView.getText().length() > 0);
+                boolean textEmpty = mSearchView.getText().length() == 0;
+                showClearButton(focused && !textEmpty);
+                mSearchView.showLogo(!focused && textEmpty);
             }
         });
 
@@ -113,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showClearButton(boolean show) {
-        mClearButton.setVisibility(show ? View.VISIBLE : View.GONE);
+        mSearchView.getMenu().findItem(R.id.menu_clear).setVisible(show);
     }
 
     public void onGithubClick(View view) {

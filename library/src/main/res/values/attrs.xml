@@ -8,6 +8,7 @@
         <attr name="fsv_menu" format="reference"/>
         <attr name="fsv_contentBackgroundColor" format="color|reference"/>
         <attr name="fsv_cornerRadius" format="dimension|reference"/>
+        <attr name="logo"/>
         <attr name="contentInsetStart"/>
         <attr name="contentInsetEnd"/>
         <attr name="android:divider"/>

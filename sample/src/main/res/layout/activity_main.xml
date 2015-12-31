@@ -26,7 +26,8 @@
         android:paddingRight="8dp"
         android:paddingLeft="8dp"
         android:background="#90000000"
-        android:hint="Search"
+        android:hint="@string/hint"
+        app:logo="@drawable/logo"
         app:fsv_menu="@menu/search"
         app:theme="@style/CustomFloatingSearchViewTheme"/>
 

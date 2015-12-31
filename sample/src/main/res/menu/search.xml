@@ -4,6 +4,6 @@
 
     <item android:id="@+id/menu.clear" android:title="Clear" android:icon="@drawable/ic_clear" app:showAsAction="always"/>
     <item android:id="@+id/menu.mic" android:title="Mic" android:icon="@drawable/ic_microphone" app:showAsAction="ifRoom"/>
-    <item android:id="@+id/menu.other" android:title="Other" app:showAsAction="never"/>
+    <item android:id="@+id/menu.toggle.icon" android:title="Show icon" android:checkable="true" android:checked="true" app:showAsAction="never"/>
 
 </menu>
