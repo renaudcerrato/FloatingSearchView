@@ -38,7 +38,6 @@ import android.view.animation.Interpolator;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.mypopsy.drawable.SearchArrowDrawable;
 import com.mypopsy.drawable.ToggleDrawable;
@@ -116,7 +115,7 @@ public class FloatingSearchView extends RelativeLayout {
     final private RoundRectDrawableWithShadow mSearchBackground;
     final private SuggestionItemDecorator mCardDecorator;
 
-    final private List<View> mHidingMenuViews = new ArrayList<>();
+    final private List<Integer> mAlwaysShownMenuViews = new ArrayList<>();
 
     private OnSearchFocusChangedListener mFocusListener;
     private OnNavigationClickListener mNavigationClickListener;
@@ -212,6 +211,9 @@ public class FloatingSearchView extends RelativeLayout {
 
     private void setupViews() {
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+            mSearchContainer.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
+
         mSearchContainer.setBackgroundDrawable(mSearchBackground);
         mSearchContainer.setMinimumHeight((int) mSearchBackground.getMinHeight());
         mSearchContainer.setMinimumWidth((int) mSearchBackground.getMinWidth());
@@ -238,7 +240,7 @@ public class FloatingSearchView extends RelativeLayout {
             setNavigationIcon(ViewUtils.getTinted(icon, colorControl));
         }
 
-        mNavButtonView.setOnClickListener(new View.OnClickListener() {
+        mNavButtonView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(mNavigationClickListener != null)
@@ -246,7 +248,7 @@ public class FloatingSearchView extends RelativeLayout {
             }
         });
 
-        setOnTouchListener(new View.OnTouchListener() {
+        setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (!isActivated()) return false;
@@ -255,7 +257,7 @@ public class FloatingSearchView extends RelativeLayout {
             }
         });
 
-        mSearchInput.setOnFocusChangeListener(new TextView.OnFocusChangeListener() {
+        mSearchInput.setOnFocusChangeListener(new OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus != isActivated()) setActivated(hasFocus);
@@ -347,8 +349,7 @@ public class FloatingSearchView extends RelativeLayout {
         if(mFocusListener != null)
             mFocusListener.onFocusChanged(activated);
 
-        setVisibility(activated ? View.GONE : View.VISIBLE, mHidingMenuViews);
-
+        showMenu(!activated);
         fadeIn(activated);
         updateSuggestionsVisibility();
     }
@@ -522,6 +523,15 @@ public class FloatingSearchView extends RelativeLayout {
         throw new IllegalStateException();
     }
 
+    private void showMenu(boolean visible) {
+        int count = mActionMenu.getChildCount();
+        for(int i = 0; i < count; i++) {
+            View view = mActionMenu.getChildAt(i);
+            if(!mAlwaysShownMenuViews.contains(view.getId()))
+                view.setVisibility(visible ? View.VISIBLE : View.GONE);
+        }
+    }
+
     private void parseMenu(XmlPullParser parser, AttributeSet attrs)
             throws XmlPullParserException, IOException {
 
@@ -559,12 +569,9 @@ public class FloatingSearchView extends RelativeLayout {
                         TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.MenuItem);
                         int itemShowAsAction = a.getInt(R.styleable.MenuItem_showAsAction, -1);
 
-                        if((itemShowAsAction & MenuItem.SHOW_AS_ACTION_ALWAYS) == 0) {
+                        if((itemShowAsAction & MenuItem.SHOW_AS_ACTION_ALWAYS) != 0) {
                             int itemId = a.getResourceId(R.styleable.MenuItem_android_id, NO_ID);
-                            if(itemId != NO_ID) {
-                                View view = mActionMenu.findViewById(itemId);
-                                if(view != null) mHidingMenuViews.add(view);
-                            }
+                            if(itemId != NO_ID) mAlwaysShownMenuViews.add(itemId);
                         }
                         a.recycle();
                     } else {
@@ -591,10 +598,6 @@ public class FloatingSearchView extends RelativeLayout {
         }
     }
 
-    static private void setVisibility(int visibility, List<View> views) {
-        for(View view: views) view.setVisibility(visibility);
-    }
-
     static private Drawable unwrap(Drawable icon) {
         if(icon instanceof android.support.v7.graphics.drawable.DrawableWrapper)
             return ((android.support.v7.graphics.drawable.DrawableWrapper)icon).getWrappedDrawable();
@@ -619,6 +622,9 @@ public class FloatingSearchView extends RelativeLayout {
 
             ObjectAnimator scaleIn = ObjectAnimator.ofPropertyValuesHolder((Object)null, pvhAlphaIn, pvhScaleInX, pvhScaleInY);
             ObjectAnimator scaleOut = ObjectAnimator.ofPropertyValuesHolder((Object)null, pvhAlphaOut, pvhScaleOutX, pvhScaleOutY);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+                enableTransitionType(LayoutTransition.CHANGING);
 
             setAnimator(APPEARING, scaleIn);
             setDuration(APPEARING, DEFAULT_DURATION_ENTER);
