@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.support.annotation.AttrRes;
-import android.support.design.widget.Snackbar;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorCompat;
@@ -19,6 +18,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -61,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
     private SearchAdapter mAdapter;
     private PublishSubject<String> mQuerySubject = PublishSubject.create();
     private Subscription mSubscription;
-    private Snackbar mSnack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence query, int start, int before, int count) {
                 showClearButton(query.length() > 0 && mSearchView.isActivated());
-                doSearch(query.toString());
+                doSearch(query.toString().trim());
             }
 
             @Override
@@ -188,36 +187,26 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         mSubscription = mQuerySubject.asObservable()
                 .debounce(500, TimeUnit.MILLISECONDS)
-                .flatMap(new Func1<String, Observable<Response>>() {
-                    @Override
-                    public Observable<Response> call(String query) {
-                        return mSearch.search(query)
-                                .retry(new Func2<Integer, Throwable, Boolean>() {
-                                    @Override
-                                    public Boolean call(Integer integer, Throwable throwable) {
-                                        return throwable instanceof InterruptedIOException;
-                                    }
-                                })
-                                .onErrorResumeNext(new Func1<Throwable, Observable<? extends Response>>() {
-                                    @Override
-                                    public Observable<? extends Response> call(Throwable throwable) {
-                                        showSnack(throwable.getClass().getSimpleName() + ":" + throwable.getMessage());
-                                        return Observable.empty();
-                                    }
-                                });
-                    }
-                })
-                .map(new Func1<Response, SearchResult[]>() {
-                    @Override
-                    public SearchResult[] call(Response response) {
-                        return response.responseData.results;
-                    }
-                })
+                .distinctUntilChanged()
+                .flatMap(new Func1<String, Observable<SearchResult[]>>() {
+                             @Override
+                             public Observable<SearchResult[]> call(String query) {
+                                 return getQueryObservable(query)
+                                         .onErrorResumeNext(new Func1<Throwable, Observable<SearchResult[]>>() {
+                                             @Override
+                                             public Observable<SearchResult[]> call(Throwable throwable) {
+                                                 Log.e(getClass().getSimpleName(), throwable.getMessage(), throwable);
+                                                 return Observable.just(new SearchResult[] {getErrorResult(throwable)});
+                                             }
+                                         });
+                             }
+                         }
+                )
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<SearchResult[]>() {
                     @Override
                     public void call(SearchResult[] searchResults) {
-                       onSearchResults(searchResults);
+                        onSearchResults(searchResults);
                     }
                 });
     }
@@ -229,21 +218,23 @@ public class MainActivity extends AppCompatActivity {
         mSubscription = null;
     }
 
-    private void showSnack(final String message) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mSnack = Snackbar.make(mSearchView, message, Snackbar.LENGTH_INDEFINITE);
-                mSnack.setAction(android.R.string.ok, new View.OnClickListener() {
+
+    private Observable<SearchResult[]> getQueryObservable(String query) {
+        return mSearch.search(query)
+                .flatMap(new Func1<Response, Observable<SearchResult[]>>() {
                     @Override
-                    public void onClick(View v) {
-                        mSnack.dismiss();
-                        mSnack = null;
+                    public Observable<SearchResult[]> call(Response response) {
+                        if (response.responseData == null)
+                            return Observable.error(new IllegalStateException(response.responseDetails));
+                        return Observable.just(response.responseData.results);
+                    }
+                })
+                .retry(new Func2<Integer, Throwable, Boolean>() {
+                    @Override
+                    public Boolean call(Integer integer, Throwable throwable) {
+                        return throwable instanceof InterruptedIOException;
                     }
                 });
-                mSnack.show();
-            }
-        });
     }
 
     @Override
@@ -262,14 +253,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void onSearchResults(SearchResult[] searchResults) {
+    private void onSearchResults(SearchResult ...searchResults) {
         mAdapter.setNotifyOnChange(false);
         mAdapter.clear();
         if (searchResults != null) mAdapter.addAll(searchResults);
         mAdapter.setNotifyOnChange(true);
         mAdapter.notifyDataSetChanged();
-        if(mSnack != null) mSnack.dismiss();
-        mSnack = null;
     }
 
     private void startTextToSpeech() {
@@ -304,6 +293,12 @@ public class MainActivity extends AppCompatActivity {
         } finally {
             a.recycle();
         }
+    }
+
+    private static SearchResult getErrorResult(Throwable throwable) {
+        return new SearchResult(
+                "<font color='red'>"+
+                "<b>"+throwable.getClass().getSimpleName() + ":</b></font> " + throwable.getMessage());
     }
 
     private class SearchAdapter extends ArrayRecyclerAdapter<SearchResult, SuggestionViewHolder> {
