@@ -3,7 +3,7 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item android:id="@+id/menu.clear" android:title="Clear" android:icon="@drawable/ic_clear" app:showAsAction="always"/>
-    <item android:id="@+id/menu.mic" android:title="Talk" android:icon="@drawable/ic_microphone" app:showAsAction="ifRoom"/>
+    <item android:id="@+id/menu.mic" android:title="Mic" android:icon="@drawable/ic_microphone" app:showAsAction="ifRoom"/>
     <item android:id="@+id/menu.other" android:title="Other" app:showAsAction="never"/>
 
 </menu>
