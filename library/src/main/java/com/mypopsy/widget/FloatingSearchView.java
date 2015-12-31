@@ -20,6 +20,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StyleRes;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.view.MarginLayoutParamsCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorCompat;
@@ -41,8 +42,6 @@ import android.view.animation.Interpolator;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
-import com.mypopsy.drawable.SearchArrowDrawable;
-import com.mypopsy.drawable.ToggleDrawable;
 import com.mypopsy.widget.internal.RoundRectDrawableWithShadow;
 import com.mypopsy.widget.internal.SuggestionItemDecorator;
 import com.mypopsy.widget.internal.ViewUtils;
@@ -117,11 +116,12 @@ public class FloatingSearchView extends RelativeLayout {
     final private RoundRectDrawableWithShadow mSearchBackground;
     final private SuggestionItemDecorator mCardDecorator;
 
-    final private List<Integer> mHidingMenu = new ArrayList<>();
+    final private List<Integer> mAlwaysShowingMenu = new ArrayList<>();
 
     private OnSearchFocusChangedListener mFocusListener;
     private OnNavigationClickListener mNavigationClickListener;
     private Drawable mBackgroundDrawable;
+    private boolean mSuggestionsShown;
 
     public FloatingSearchView(Context context) {
         this(context, null);
@@ -207,7 +207,7 @@ public class FloatingSearchView extends RelativeLayout {
         inflateMenu(a.getResourceId(R.styleable.FloatingSearchView_fsv_menu, 0));
         setPopupTheme(a.getResourceId(R.styleable.FloatingSearchView_popupTheme, 0));
         setHint(a.getString(R.styleable.FloatingSearchView_android_hint));
-        setNavigationIcon(a.getDrawable(R.styleable.FloatingSearchView_navigationIcon));
+        setIcon(a.getDrawable(R.styleable.FloatingSearchView_fsv_icon));
 
         a.recycle();
     }
@@ -236,12 +236,6 @@ public class FloatingSearchView extends RelativeLayout {
 
         setBackgroundDrawable(mBackgroundDrawable);
         mBackgroundDrawable.setAlpha(0);
-
-        if(getNavigationIcon() == null) {
-            Drawable icon = new SearchArrowDrawable(getContext());
-            int colorControl = ViewUtils.getThemeAttrColor(getContext(), R.attr.colorControlNormal);
-            setNavigationIcon(ViewUtils.getTinted(icon, colorControl));
-        }
 
         mNavButtonView.setOnClickListener(new OnClickListener() {
             @Override
@@ -306,7 +300,8 @@ public class FloatingSearchView extends RelativeLayout {
             AttributeSet attrs = Xml.asAttributeSet(parser);
             parseMenu(parser, attrs);
         } catch (XmlPullParserException | IOException e) {
-            throw new InflateException("Error inflating menu XML", e);
+            // should not happens
+            throw new InflateException("Error parsing menu XML", e);
         } finally {
             if (parser != null) parser.close();
         }
@@ -400,12 +395,12 @@ public class FloatingSearchView extends RelativeLayout {
         mSearchInput.setLogo(resId);
     }
 
-    public void setNavigationIcon(@DrawableRes int resId) {
+    public void setIcon(@DrawableRes int resId) {
         showNavigationIcon(resId != 0);
         mNavButtonView.setImageResource(resId);
     }
 
-    public void setNavigationIcon(Drawable drawable) {
+    public void setIcon(Drawable drawable) {
         showNavigationIcon(drawable != null);
         mNavButtonView.setImageDrawable(drawable);
     }
@@ -455,7 +450,7 @@ public class FloatingSearchView extends RelativeLayout {
 
         Drawable icon = unwrap(getNavigationIcon());
 
-        if(icon instanceof ToggleDrawable) {
+        if(icon != null) {
             ObjectAnimator iconAnim = ObjectAnimator.ofFloat(icon, "progress", enter ? 1 : 0);
             iconAnim.setDuration(backgroundAnim.getDuration());
             iconAnim.setInterpolator(backgroundAnim.getInterpolator());
@@ -474,11 +469,13 @@ public class FloatingSearchView extends RelativeLayout {
     }
 
     private boolean suggestionsShown() {
-        return mDivider.getVisibility() == View.VISIBLE;
+        return mSuggestionsShown;
     }
 
-    private void showSuggestions(final boolean enter) {
-        if(enter == suggestionsShown()) return;
+    private void showSuggestions(final boolean show) {
+        if(show == suggestionsShown()) return;
+
+        mSuggestionsShown = show;
 
         int childCount = mRecyclerView.getChildCount();
         int translation = 0;
@@ -486,7 +483,7 @@ public class FloatingSearchView extends RelativeLayout {
         final Runnable endAction = new Runnable() {
             @Override
             public void run() {
-                if(enter)
+                if(show)
                     updateDivider();
                 else {
                     showDivider(false);
@@ -496,7 +493,7 @@ public class FloatingSearchView extends RelativeLayout {
             }
         };
 
-        if(enter) {
+        if(show) {
             updateDivider();
             mRecyclerView.setVisibility(VISIBLE);
             if(mRecyclerView.getTranslationY() == 0)
@@ -508,12 +505,12 @@ public class FloatingSearchView extends RelativeLayout {
 
         ViewPropertyAnimatorCompat listAnim = ViewCompat.animate(mRecyclerView)
                 .translationY(translation)
-                .setDuration(enter ? DEFAULT_DURATION_ENTER : DEFAULT_DURATION_EXIT)
-                .setInterpolator(enter ? DECELERATE : ACCELERATE)
+                .setDuration(show ? DEFAULT_DURATION_ENTER : DEFAULT_DURATION_EXIT)
+                .setInterpolator(show ? DECELERATE : ACCELERATE)
                 .withLayer()
                 .withEndAction(endAction);
 
-        if(enter || childCount > 0)
+        if(show || childCount > 0)
             listAnim.start();
         else
             endAction.run();
@@ -544,9 +541,10 @@ public class FloatingSearchView extends RelativeLayout {
 
     private void showMenu(final boolean visible) {
         Menu menu = getMenu();
-        for(int id: mHidingMenu) {
-            MenuItem item = menu.findItem(id);
-            if(item != null) item.setVisible(visible);
+        for(int i = 0; i < menu.size(); i++) {
+            MenuItem item = menu.getItem(i);
+            if(mAlwaysShowingMenu.contains(item.getItemId())) continue;
+            item.setVisible(visible);
         }
     }
 
@@ -587,9 +585,9 @@ public class FloatingSearchView extends RelativeLayout {
                         TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.MenuItem);
                         int itemShowAsAction = a.getInt(R.styleable.MenuItem_showAsAction, -1);
 
-                        if((itemShowAsAction & MenuItem.SHOW_AS_ACTION_ALWAYS) == 0) {
+                        if((itemShowAsAction & MenuItem.SHOW_AS_ACTION_ALWAYS) != 0) {
                             int itemId = a.getResourceId(R.styleable.MenuItem_android_id, NO_ID);
-                            if(itemId != NO_ID) mHidingMenu.add(itemId);
+                            if(itemId != NO_ID) mAlwaysShowingMenu.add(itemId);
                         }
                         a.recycle();
                     } else {
@@ -623,7 +621,7 @@ public class FloatingSearchView extends RelativeLayout {
             return ((android.support.v4.graphics.drawable.DrawableWrapper)icon).getWrappedDrawable();
         if(Build.VERSION.SDK_INT >= 23 && icon instanceof android.graphics.drawable.DrawableWrapper)
             return ((android.graphics.drawable.DrawableWrapper)icon).getDrawable();
-        return icon;
+        return DrawableCompat.unwrap(icon);
     }
 
     private static class RecyclerView extends android.support.v7.widget.RecyclerView {

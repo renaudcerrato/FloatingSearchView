@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<android.support.design.widget.CoordinatorLayout
+    android:id="@+id/coordinator"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
@@ -31,4 +32,4 @@
         app:fsv_menu="@menu/search"
         app:theme="@style/CustomFloatingSearchViewTheme"/>
 
-</FrameLayout>
+</android.support.design.widget.CoordinatorLayout>

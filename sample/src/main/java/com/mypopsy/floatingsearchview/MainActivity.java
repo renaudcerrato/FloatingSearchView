@@ -1,16 +1,23 @@
 package com.mypopsy.floatingsearchview;
 
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
+import android.support.annotation.AttrRes;
+import android.support.design.widget.Snackbar;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ActionMenuView;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
+import android.text.Html;
 import android.text.TextWatcher;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
@@ -24,31 +31,53 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.mypopsy.drawable.SearchArrowDrawable;
+import com.mypopsy.floatingsearchview.adapter.ArrayRecyclerAdapter;
+import com.mypopsy.floatingsearchview.search.GoogleSearch;
+import com.mypopsy.floatingsearchview.search.GoogleSearchFactory;
+import com.mypopsy.floatingsearchview.search.Response;
+import com.mypopsy.floatingsearchview.search.SearchResult;
 import com.mypopsy.widget.FloatingSearchView;
 
+import java.io.InterruptedIOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
+
+import rx.Observable;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.functions.Func2;
+import rx.subjects.PublishSubject;
 
 public class MainActivity extends AppCompatActivity {
 
-    final private static String[] countries = new String[]{"Abkhazia","Afghanistan","Akrotiri and Dhekelia","Aland","Albania","Algeria","American Samoa","Andorra","Angola","Anguilla","Antigua and Barbuda","Argentina","Armenia","Aruba","Ascension Island","Australia","Austria","Azerbaijan","Bahamas, The","Bahrain","Bangladesh","Barbados","Belarus","Belgium","Belize","Benin","Bermuda","Bhutan","Bolivia","Bosnia and Herzegovina","Botswana","Brazil","Brunei","Bulgaria","Burkina Faso","Burundi","Cambodia","Cameroon","Canada","Cape Verde","Cayman Islands","Central Africa Republic","Chad","Chile","China","Christmas Island","Cocos (Keeling) Islands","Colombia","Comoros","Congo","Cook Islands","Costa Rica","Cote d'lvoire","Croatia","Cuba","Cyprus","Czech Republic","Denmark","Djibouti","Dominica","Dominican Republic","East Timor Ecuador","Egypt","El Salvador","Equatorial Guinea","Eritrea","Estonia","Ethiopia","Falkland Islands","Faroe Islands","Fiji","Finland","France","French Polynesia","Gabon","Cambia, The","Georgia","Germany","Ghana","Gibraltar","Greece","Greenland","Grenada","Guam","Guatemala","Guemsey","Guinea","Guinea-Bissau","Guyana","Haiti","Honduras","Hong Kong","Hungary","Iceland","India","Indonesia","Iran","Iraq","Ireland","Isle of Man","Israel","Italy","Jamaica","Japan","Jersey","Jordan","Kazakhstan","Kenya","Kiribati","Korea, N","Korea, S","Kosovo","Kuwait","Kyrgyzstan","Laos","Latvia","Lebanon","Lesotho","Liberia","Libya","Liechtenstein","Lithuania","Luxembourg","Macao","Macedonia","Madagascar","Malawi","Malaysia","Maldives","Mali","Malta","Marshall Islands","Mauritania","Mauritius","Mayotte","Mexico","Micronesia","Moldova","Monaco","Mongolia","Montenegro","Montserrat","Morocco","Mozambique","Myanmar","Nagorno-Karabakh","Namibia","Nauru","Nepal","Netherlands","Netherlands Antilles","New Caledonia","New Zealand","Nicaragua","Niger","Nigeria","Niue","Norfolk Island","Northern Cyprus","Northern Mariana Islands","Norway","Oman","Pakistan","Palau","Palestine","Panama","Papua New Guinea","Paraguay","Peru","Philippines","Pitcaim Islands","Poland","Portugal","Puerto Rico","Qatar","Romania","Russia","Rwanda","Sahrawi Arab Democratic Republic","Saint-Barthelemy","Saint Helena","Saint Kitts and Nevis","Saint Lucia","Saint Martin","Saint Pierre and Miquelon","Saint Vincent and Grenadines","Samos","San Marino","Sao Tome and Principe","Saudi Arabia","Senegal","Serbia","Seychelles","Sierra Leone","Singapore","Slovakia","Slovenia","Solomon Islands","Somalia","Somaliland","South Africa","South Ossetia","Spain","Sri Lanka","Sudan","Suriname","Svalbard","Swaziland","Sweden","Switzerland","Syria","Tajikistan","Tanzania","Thailand","Togo","Tokelau","Tonga","Transnistria","Trinidad and Tobago","Tristan da Cunha","Tunisia","Turkey","Turkmenistan","Turks and Caicos Islands","Tuvalu","Uganda","Ukraine","United Arab Emirates","United Kingdom","United States","Uruguay","Uzbekistan","Vanuatu","Vatican City","Venezuela","Vietnam","Virgin Islands, British","Virgin Islands, U.S.","Wallis and Futuna","Yemen","Zambia","Zimbabwe"};
-
     private static final int REQ_CODE_SPEECH_INPUT = 42;
 
-
-    final private Adapter mAdapter = new Adapter(countries);
     private FloatingSearchView mSearchView;
+    private GoogleSearch mSearch;
+    private SearchAdapter mAdapter;
+    private PublishSubject<String> mQuerySubject = PublishSubject.create();
+    private Subscription mSubscription;
+    private Snackbar mSnack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mSearch = GoogleSearchFactory.get();
+
         mSearchView = (FloatingSearchView) findViewById(R.id.search);
-        //mSearchView.setItemAnimator(new CustomSuggestionItemAnimator(mSearchView));
-        mSearchView.setAdapter(mAdapter);
+        mSearchView.setAdapter(mAdapter = new SearchAdapter());
         mSearchView.showLogo(true);
+        mSearchView.setItemAnimator(new CustomSuggestionItemAnimator(mSearchView));
+
+        updateNavigationIcon(R.id.menu_icon_search);
+
+        mSearchView.showNavigationIcon(shouldShowNavigationIcon());
 
         mSearchView.setOnNavigationClickListener(new FloatingSearchView.OnNavigationClickListener() {
             @Override
@@ -61,7 +90,6 @@ public class MainActivity extends AppCompatActivity {
         mSearchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
             @Override
             public void onSearchAction(CharSequence text) {
-                // toggle
                 mSearchView.setActivated(false);
             }
         });
@@ -69,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
         mSearchView.setOnMenuItemClickListener(new ActionMenuView.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                switch(item.getItemId()) {
+                switch (item.getItemId()) {
                     case R.id.menu_clear:
                         mSearchView.setText(null);
                         mSearchView.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
@@ -81,7 +109,10 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.menu_tts:
                         startTextToSpeech();
                         break;
-                    default:
+                    case R.id.menu_icon_search:
+                    case R.id.menu_icon_drawer:
+                    case R.id.menu_icon_custom:
+                        updateNavigationIcon(item.getItemId());
                         Toast.makeText(MainActivity.this, item.getTitle(), Toast.LENGTH_SHORT).show();
                         break;
                 }
@@ -95,15 +126,9 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                showClearButton(s.length() > 0 && mSearchView.isActivated());
-
-                mAdapter.items.clear();
-                for (String country : countries)
-                    if (country.toLowerCase(Locale.US).contains(s.toString().toLowerCase()))
-                        mAdapter.items.add(country);
-                mAdapter.notifyDataSetChanged();
+            public void onTextChanged(CharSequence query, int start, int before, int count) {
+                showClearButton(query.length() > 0 && mSearchView.isActivated());
+                doSearch(query.toString());
             }
 
             @Override
@@ -116,9 +141,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFocusChanged(final boolean focused) {
                 boolean textEmpty = mSearchView.getText().length() == 0;
+
                 showClearButton(focused && !textEmpty);
                 mSearchView.showLogo(!focused && textEmpty);
-                if(focused)
+
+                if (focused)
                     mSearchView.showNavigationIcon(true);
                 else
                     mSearchView.showNavigationIcon(shouldShowNavigationIcon());
@@ -128,8 +155,95 @@ public class MainActivity extends AppCompatActivity {
         mSearchView.setText(null);
     }
 
+    private void doSearch(String query) {
+        mQuerySubject.onNext(query);
+    }
+
+    private void updateNavigationIcon(int itemId) {
+        Context context = mSearchView.getContext();
+        Drawable drawable = null;
+
+        switch(itemId) {
+            case R.id.menu_icon_search:
+                drawable = new SearchArrowDrawable(context);
+                break;
+            case R.id.menu_icon_drawer:
+                drawable = new android.support.v7.graphics.drawable.DrawerArrowDrawable(context);
+                break;
+            case R.id.menu_icon_custom:
+                drawable = new SearchArrowDrawable(context);
+                break;
+        }
+        drawable = DrawableCompat.wrap(drawable);
+        DrawableCompat.setTint(drawable, getThemeAttrColor(context, R.attr.colorControlNormal));
+        mSearchView.setIcon(drawable);
+    }
+
     private boolean shouldShowNavigationIcon() {
         return mSearchView.getMenu().findItem(R.id.menu_toggle_icon).isChecked();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mSubscription = mQuerySubject.asObservable()
+                .debounce(500, TimeUnit.MILLISECONDS)
+                .flatMap(new Func1<String, Observable<Response>>() {
+                    @Override
+                    public Observable<Response> call(String query) {
+                        return mSearch.search(query)
+                                .retry(new Func2<Integer, Throwable, Boolean>() {
+                                    @Override
+                                    public Boolean call(Integer integer, Throwable throwable) {
+                                        return throwable instanceof InterruptedIOException;
+                                    }
+                                })
+                                .onErrorResumeNext(new Func1<Throwable, Observable<? extends Response>>() {
+                                    @Override
+                                    public Observable<? extends Response> call(Throwable throwable) {
+                                        showSnack(throwable.getClass().getSimpleName() + ":" + throwable.getMessage());
+                                        return Observable.empty();
+                                    }
+                                });
+                    }
+                })
+                .map(new Func1<Response, SearchResult[]>() {
+                    @Override
+                    public SearchResult[] call(Response response) {
+                        return response.responseData.results;
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<SearchResult[]>() {
+                    @Override
+                    public void call(SearchResult[] searchResults) {
+                       onSearchResults(searchResults);
+                    }
+                });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(mSubscription != null) mSubscription.unsubscribe();
+        mSubscription = null;
+    }
+
+    private void showSnack(final String message) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mSnack = Snackbar.make(mSearchView, message, Snackbar.LENGTH_INDEFINITE);
+                mSnack.setAction(android.R.string.ok, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mSnack.dismiss();
+                        mSnack = null;
+                    }
+                });
+                mSnack.show();
+            }
+        });
     }
 
     @Override
@@ -146,6 +260,16 @@ public class MainActivity extends AppCompatActivity {
                 break;
             }
         }
+    }
+
+    private void onSearchResults(SearchResult[] searchResults) {
+        mAdapter.setNotifyOnChange(false);
+        mAdapter.clear();
+        if (searchResults != null) mAdapter.addAll(searchResults);
+        mAdapter.setNotifyOnChange(true);
+        mAdapter.notifyDataSetChanged();
+        if(mSnack != null) mSnack.dismiss();
+        mSnack = null;
     }
 
     private void startTextToSpeech() {
@@ -171,14 +295,23 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(BuildConfig.PROJECT_URL)));
     }
 
-    private class Adapter extends RecyclerView.Adapter<SuggestionViewHolder> {
+    private static int getThemeAttrColor(Context context, @AttrRes int attr) {
+        final int[] TEMP_ARRAY = new int[1];
+        TEMP_ARRAY[0] = attr;
+        TypedArray a = context.obtainStyledAttributes(null, TEMP_ARRAY);
+        try {
+            return a.getColor(0, 0);
+        } finally {
+            a.recycle();
+        }
+    }
 
-        private ArrayList<String> items = new ArrayList<>();
+    private class SearchAdapter extends ArrayRecyclerAdapter<SearchResult, SuggestionViewHolder> {
+
         private LayoutInflater inflater;
 
-        Adapter(String ...items) {
+        SearchAdapter() {
             setHasStableIds(true);
-            addAll(items);
         }
 
         @Override
@@ -189,23 +322,12 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(SuggestionViewHolder holder, int position) {
-            holder.bind(items.get(position));
+            holder.bind(getItem(position));
         }
 
         @Override
         public long getItemId(int position) {
             return position;
-        }
-
-        @Override
-        public int getItemCount() {
-            return items.size();
-        }
-
-        public void addAll(String... strings) {
-            int count = getItemCount();
-            items.addAll(Arrays.asList(strings));
-            notifyItemRangeInserted(count, strings.length);
         }
     }
 
@@ -219,7 +341,7 @@ public class MainActivity extends AppCompatActivity {
             left = (ImageView) itemView.findViewById(R.id.icon_start);
             right= (ImageView) itemView.findViewById(R.id.icon_end);
             text = (TextView) itemView.findViewById(R.id.text);
-            left.setImageResource(R.drawable.ic_history);
+            left.setImageResource(R.drawable.ic_google);
             text.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -230,13 +352,13 @@ public class MainActivity extends AppCompatActivity {
             right.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mSearchView.setText(text.getText());
+                    mSearchView.setText(text.getText().toString());
                 }
             });
         }
 
-        void bind(String text) {
-            this.text.setText(text);
+        void bind(SearchResult result) {
+            this.text.setText(Html.fromHtml(result.title));
         }
     }
 
