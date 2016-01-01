@@ -1,4 +1,4 @@
-# FloatingSearchView #
+# FloatingSearchView
 
 Yet another floating search view implementation (also known as persistent search): that implementation fully supports menu (including submenu), logo and animated icon. Dropdown suggestions are backed by a `RecyclerView` and you can provide your own `RecyclerView.Adapter`, `ItemDecorator` or `ItemAnimator`. No hiding. 
 
@@ -10,7 +10,7 @@ Yet another floating search view implementation (also known as persistent search
 </a>
 </p>
 
-# Usage #
+# Usage
 
 Add a [`FloatingSearchView`](https://github.com/renaudcerrato/FloatingSearchView/blob/master/library/src/main/java/com/mypopsy/widget/FloatingSearchView.java) to your view hierarchy, make sure that it takes up the full width and height:
 
@@ -42,7 +42,7 @@ mSearchView.setOnSearchFocusChangedListener(...);
 
 Look at the [sample](https://github.com/renaudcerrato/FloatingSearchView/blob/master/sample/src/main/java/com/mypopsy/floatingsearchview/MainActivity.java).
 
-## Menu ##
+## Menu
 
 The implementation fully supports menu (and submenu):
 
@@ -68,7 +68,7 @@ Menu items can be automatically hidden when the search view gets focus depending
 </menu>
 ```
 
-## Animated Icon ##
+## Animated Icon
 
 `FloatingSearchView` will automagically animate icons drawable, given they declare a `progress` property: 
 
@@ -79,12 +79,10 @@ Menu items can be automatically hidden when the search view gets focus depending
 
 ## Other
 
-Since the implementation tries to focus on core logic instead of business logic as much as possible, common features like "tap to clear" or "indeterminate progress bar" are not built-in but can be easily implemented using menu items.
-
-Look at the [sample](https://github.com/renaudcerrato/FloatingSearchView/blob/master/sample/src/main/java/com/mypopsy/floatingsearchview/MainActivity.java).
+Since the implementation tries to focus on core logic instead of business logic as much as possible, common features like *"tap to clear"*, *"speech to text"* or *"loading progress"* are voluntarily **NOT** built-in. They be easily implemented using menu items as seen in the [sample](https://github.com/renaudcerrato/FloatingSearchView/blob/master/sample/src/main/java/com/mypopsy/floatingsearchview/MainActivity.java).
 
 
-# Styling #
+# Styling
 
 `FloatingSearchView` do not expose most of TextView's XML attributes (`textColor`,`textSize`...). You can style them using theme attributes by applying [`app:theme`](https://chris.banes.me/2014/10/17/appcompat-v21)  for example:
 
@@ -118,7 +116,7 @@ Then, apply your custom theme through [`app:theme`](https://chris.banes.me/2014/
 
 Look at the [sample](https://github.com/renaudcerrato/FloatingSearchView/blob/master/sample/src/main/java/com/mypopsy/floatingsearchview/MainActivity.java).
 
-# Install #
+# Install
 
 This repositery can be found on JitPack:
 
