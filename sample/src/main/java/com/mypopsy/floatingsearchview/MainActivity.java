@@ -183,8 +183,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onStart() {
+        super.onStart();
         mSubscription = mQuerySubject.asObservable()
                 .debounce(500, TimeUnit.MILLISECONDS)
                 .distinctUntilChanged()
@@ -212,8 +212,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onDestroy() {
+        super.onDestroy();
         if(mSubscription != null) mSubscription.unsubscribe();
         mSubscription = null;
     }
@@ -282,17 +282,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void onGithubClick(View view) {
         startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(BuildConfig.PROJECT_URL)));
-    }
-
-    private static int getThemeAttrColor(Context context, @AttrRes int attr) {
-        final int[] TEMP_ARRAY = new int[1];
-        TEMP_ARRAY[0] = attr;
-        TypedArray a = context.obtainStyledAttributes(null, TEMP_ARRAY);
-        try {
-            return a.getColor(0, 0);
-        } finally {
-            a.recycle();
-        }
     }
 
     private static SearchResult getErrorResult(Throwable throwable) {
@@ -402,5 +391,16 @@ public class MainActivity extends AppCompatActivity {
                     .setInterpolator(INTERPOLATOR_REMOVE);
         }
 
+    }
+
+    private static int getThemeAttrColor(Context context, @AttrRes int attr) {
+        final int[] TEMP_ARRAY = new int[1];
+        TEMP_ARRAY[0] = attr;
+        TypedArray a = context.obtainStyledAttributes(null, TEMP_ARRAY);
+        try {
+            return a.getColor(0, 0);
+        } finally {
+            a.recycle();
+        }
     }
 }
