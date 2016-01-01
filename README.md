@@ -1,6 +1,6 @@
 # FloatingSearchView
 
-Yet another floating search view implementation (also known as persistent search): that implementation fully supports menu (including submenu), logo and animated icon. Dropdown suggestions are backed by a `RecyclerView` and you can provide your own `RecyclerView.Adapter`, `ItemDecorator` or `ItemAnimator`. No hiding. 
+Yet another floating search view implementation, also known as persistent search: that implementation fully supports menu (including submenu), logo and animated icon. Dropdown suggestions are backed by a `RecyclerView` and you can provide your own `RecyclerView.Adapter`, `ItemDecorator` or `ItemAnimator`. No hiding. 
 
 [DEMO APK](https://github.com/renaudcerrato/FloatingSearchView/raw/master/sample/sample-debug.apk)
 
