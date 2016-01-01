@@ -13,6 +13,7 @@
         style="@style/Widget.AppCompat.ActionButton"/>
 
     <LinearLayout
+        android:id="@+id/text.container"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"

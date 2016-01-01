@@ -287,7 +287,8 @@ public class MainActivity extends AppCompatActivity implements
             text = (TextView) itemView.findViewById(R.id.text);
             url = (TextView) itemView.findViewById(R.id.url);
             left.setImageResource(R.drawable.ic_google);
-            text.setOnClickListener(new View.OnClickListener() {
+            itemView.findViewById(R.id.text_container)
+                    .setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     onItemClick(mAdapter.getItem(getAdapterPosition()));
