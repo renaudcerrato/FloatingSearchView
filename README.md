@@ -79,7 +79,7 @@ Menu items can be automatically hidden when the search view gets focus depending
 
 ## Other
 
-Since the implementation tries to focus on core logic instead of business logic as much as possible, common features like *"tap to clear"*, *"speech to text"* or *"loading progress"* are voluntarily **NOT** built-in. They be easily implemented using menu items as seen in the [sample](https://github.com/renaudcerrato/FloatingSearchView/blob/master/sample/src/main/java/com/mypopsy/floatingsearchview/MainActivity.java).
+Since the implementation tries to focus on core logic instead of business logic as much as possible, common features like *"tap to clear"*, *"speech to text"* or *"loading progress"* are voluntarily **NOT** built-in because they can be easily implemented using menu items as seen in the [sample](https://github.com/renaudcerrato/FloatingSearchView/blob/master/sample/src/main/java/com/mypopsy/floatingsearchview/MainActivity.java).
 
 
 # Styling
