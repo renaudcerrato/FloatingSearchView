@@ -20,7 +20,6 @@ public class SearchModule {
     }
 
     @Provides
-    @Singleton
     SearchController provideSearchController(GoogleSearchController searchController) {
         return searchController;
     }

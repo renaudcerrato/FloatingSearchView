@@ -5,7 +5,6 @@ import java.io.InterruptedIOException;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import rx.Observable;
 import rx.Scheduler;
@@ -17,7 +16,6 @@ import rx.functions.Func1;
 import rx.functions.Func2;
 import rx.subjects.PublishSubject;
 
-@Singleton
 public class GoogleSearchController implements SearchController {
 
     private static final int DEFAULT_DEBOUNCE = 700; // milliseconds
@@ -70,7 +68,7 @@ public class GoogleSearchController implements SearchController {
     }
 
     private void ensureSubscribed() {
-        if(mSubscription != null) return;
+        if(mSubscription != null && !mSubscription.isUnsubscribed()) return;
         mSubscription = mQuerySubject.asObservable()
                 .debounce(DEFAULT_DEBOUNCE, TimeUnit.MILLISECONDS)
                 .distinctUntilChanged()
