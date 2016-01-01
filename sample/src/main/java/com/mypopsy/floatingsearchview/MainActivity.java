@@ -1,15 +1,11 @@
 package com.mypopsy.floatingsearchview;
 
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
-import android.support.annotation.AttrRes;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorCompat;
@@ -20,7 +16,6 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.DisplayMetrics;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -41,10 +36,11 @@ import com.mypopsy.floatingsearchview.adapter.ArrayRecyclerAdapter;
 import com.mypopsy.floatingsearchview.dagger.DaggerAppComponent;
 import com.mypopsy.floatingsearchview.search.SearchController;
 import com.mypopsy.floatingsearchview.search.SearchResult;
+import com.mypopsy.floatingsearchview.utils.PackageUtils;
+import com.mypopsy.floatingsearchview.utils.ViewUtils;
 import com.mypopsy.widget.FloatingSearchView;
 
 import java.util.ArrayList;
-import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -155,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements
                 break;
         }
         drawable = DrawableCompat.wrap(drawable);
-        DrawableCompat.setTint(drawable, getThemeAttrColor(context, R.attr.colorControlNormal));
+        DrawableCompat.setTint(drawable, ViewUtils.getThemeAttrColor(context, R.attr.colorControlNormal));
         mSearchView.setIcon(drawable);
     }
 
@@ -197,7 +193,7 @@ public class MainActivity extends AppCompatActivity implements
                 mSearchView.showNavigationIcon(item.isChecked());
                 break;
             case R.id.menu_tts:
-                startTextToSpeech();
+                PackageUtils.startTextToSpeech(this, getString(R.string.speech_prompt), REQ_CODE_SPEECH_INPUT);
                 break;
             case R.id.menu_icon_search:
             case R.id.menu_icon_drawer:
@@ -229,18 +225,11 @@ public class MainActivity extends AppCompatActivity implements
         onSearchResults(getErrorResult(throwable));
     }
 
-    private void startTextToSpeech() {
-        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
-        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, getString(R.string.speech_prompt));
-        try {
-            startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
-        } catch (ActivityNotFoundException a) {
-            Toast.makeText(this, getString(R.string.speech_not_supported),
-                    Toast.LENGTH_SHORT).show();
-        }
+    private void onItemClick(SearchResult result) {
+        mSearchView.setActivated(false);
+        if(!TextUtils.isEmpty(result.url)) PackageUtils.start(this, Uri.parse(result.url));
     }
+
 
     private void showProgressBar(boolean show) {
         mSearchView.getMenu().findItem(R.id.menu_progress).setVisible(show);
@@ -251,7 +240,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void onGithubClick(View view) {
-        startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(BuildConfig.PROJECT_URL)));
+        PackageUtils.start(this, Uri.parse(BuildConfig.PROJECT_URL));
     }
 
     private static SearchResult getErrorResult(Throwable throwable) {
@@ -259,17 +248,6 @@ public class MainActivity extends AppCompatActivity implements
                 "<font color='red'>"+
                 "<b>"+throwable.getClass().getSimpleName()+":</b>"+
                 "</font> " + throwable.getMessage());
-    }
-
-    private static int getThemeAttrColor(Context context, @AttrRes int attr) {
-        final int[] TEMP_ARRAY = new int[1];
-        TEMP_ARRAY[0] = attr;
-        TypedArray a = context.obtainStyledAttributes(null, TEMP_ARRAY);
-        try {
-            return a.getColor(0, 0);
-        } finally {
-            a.recycle();
-        }
     }
 
     private class SearchAdapter extends ArrayRecyclerAdapter<SearchResult, SuggestionViewHolder> {
@@ -312,8 +290,7 @@ public class MainActivity extends AppCompatActivity implements
             text.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mSearchView.setActivated(false);
-                    mSearchView.setText(text.getText());
+                    onItemClick(mAdapter.getItem(getAdapterPosition()));
                 }
             });
             right.setOnClickListener(new View.OnClickListener() {
@@ -381,7 +358,7 @@ public class MainActivity extends AppCompatActivity implements
 
         public CustomDrawable(Context context) {
             super(context);
-            float radius = dpToPx(9);
+            float radius = ViewUtils.dpToPx(9);
 
             CrossModel cross = new CrossModel(radius*2);
 
@@ -391,10 +368,5 @@ public class MainActivity extends AppCompatActivity implements
             add(Bezier.quadrant(radius, 180), cross.upLine);
             add(Bezier.quadrant(radius, 270), cross.downLine);
         }
-    }
-
-    private static int dpToPx(int dp){
-        DisplayMetrics metrics = Resources.getSystem().getDisplayMetrics();
-        return (int) (dp * metrics.density);
     }
 }

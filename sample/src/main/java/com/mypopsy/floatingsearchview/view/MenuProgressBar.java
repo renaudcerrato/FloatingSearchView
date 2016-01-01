@@ -1,9 +1,9 @@
 package com.mypopsy.floatingsearchview.view;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.util.DisplayMetrics;
 import android.widget.ProgressBar;
+
+import com.mypopsy.floatingsearchview.utils.ViewUtils;
 
 /**
  * Created by renaud on 01/01/16.
@@ -16,11 +16,6 @@ public class MenuProgressBar extends ProgressBar {
 
     @Override
     protected synchronized void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        setMeasuredDimension(dpToPx(48), dpToPx(24));
-    }
-
-    private static int dpToPx(int dp){
-        DisplayMetrics metrics = Resources.getSystem().getDisplayMetrics();
-        return (int) (dp * metrics.density);
+        setMeasuredDimension(ViewUtils.dpToPx(48), ViewUtils.dpToPx(24));
     }
 }
