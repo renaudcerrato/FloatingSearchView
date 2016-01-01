@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements
 
         mSearchView.showNavigationIcon(shouldShowNavigationIcon());
 
-        mSearchView.setOnNavigationClickListener(new FloatingSearchView.OnNavigationClickListener() {
+        mSearchView.setOnIconClickListener(new FloatingSearchView.OnIconClickListener() {
             @Override
             public void onNavigationClick() {
                 // toggle

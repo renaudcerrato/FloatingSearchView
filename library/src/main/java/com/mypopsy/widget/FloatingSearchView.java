@@ -96,7 +96,7 @@ public class FloatingSearchView extends RelativeLayout {
         void onSearchAction(CharSequence text);
     }
 
-    public interface OnNavigationClickListener {
+    public interface OnIconClickListener {
         void onNavigationClick();
     }
 
@@ -119,7 +119,7 @@ public class FloatingSearchView extends RelativeLayout {
     final private List<Integer> mAlwaysShowingMenu = new ArrayList<>();
 
     private OnSearchFocusChangedListener mFocusListener;
-    private OnNavigationClickListener mNavigationClickListener;
+    private OnIconClickListener mNavigationClickListener;
     private Drawable mBackgroundDrawable;
     private boolean mSuggestionsShown;
 
@@ -356,7 +356,7 @@ public class FloatingSearchView extends RelativeLayout {
         updateSuggestionsVisibility();
     }
 
-    public void setOnNavigationClickListener(OnNavigationClickListener navigationClickListener) {
+    public void setOnIconClickListener(OnIconClickListener navigationClickListener) {
         mNavigationClickListener = navigationClickListener;
     }
 
