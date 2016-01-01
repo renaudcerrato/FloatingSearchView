@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements
 
         updateNavigationIcon(R.id.menu_icon_search);
 
-        mSearchView.showNavigationIcon(shouldShowNavigationIcon());
+        mSearchView.showIcon(shouldShowNavigationIcon());
 
         mSearchView.setOnIconClickListener(new FloatingSearchView.OnIconClickListener() {
             @Override
@@ -117,9 +117,9 @@ public class MainActivity extends AppCompatActivity implements
                 mSearchView.showLogo(!focused && textEmpty);
 
                 if (focused)
-                    mSearchView.showNavigationIcon(true);
+                    mSearchView.showIcon(true);
                 else
-                    mSearchView.showNavigationIcon(shouldShowNavigationIcon());
+                    mSearchView.showIcon(shouldShowNavigationIcon());
             }
         });
 
@@ -190,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements
                 break;
             case R.id.menu_toggle_icon:
                 item.setChecked(!item.isChecked());
-                mSearchView.showNavigationIcon(item.isChecked());
+                mSearchView.showIcon(item.isChecked());
                 break;
             case R.id.menu_tts:
                 PackageUtils.startTextToSpeech(this, getString(R.string.speech_prompt), REQ_CODE_SPEECH_INPUT);

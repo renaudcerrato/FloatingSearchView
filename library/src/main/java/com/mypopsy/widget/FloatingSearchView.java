@@ -396,12 +396,12 @@ public class FloatingSearchView extends RelativeLayout {
     }
 
     public void setIcon(@DrawableRes int resId) {
-        showNavigationIcon(resId != 0);
+        showIcon(resId != 0);
         mNavButtonView.setImageResource(resId);
     }
 
     public void setIcon(Drawable drawable) {
-        showNavigationIcon(drawable != null);
+        showIcon(drawable != null);
         mNavButtonView.setImageDrawable(drawable);
     }
 
@@ -409,11 +409,11 @@ public class FloatingSearchView extends RelativeLayout {
         mSearchInput.showLogo(show);
     }
 
-    public void showNavigationIcon(boolean show) {
+    public void showIcon(boolean show) {
         mNavButtonView.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
-    public Drawable getNavigationIcon() {
+    public Drawable getIcon() {
         if(mNavButtonView == null) return null;
         return mNavButtonView.getDrawable();
     }
@@ -448,7 +448,7 @@ public class FloatingSearchView extends RelativeLayout {
         backgroundAnim.setInterpolator(enter ? DECELERATE : ACCELERATE);
         backgroundAnim.start();
 
-        Drawable icon = unwrap(getNavigationIcon());
+        Drawable icon = unwrap(getIcon());
 
         if(icon != null) {
             ObjectAnimator iconAnim = ObjectAnimator.ofFloat(icon, "progress", enter ? 1 : 0);
