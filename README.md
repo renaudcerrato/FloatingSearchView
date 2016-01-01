@@ -1,6 +1,6 @@
 # FloatingSearchView #
 
-Yet another floating search view implementation (also known as persistent search): that implementation supports menu, submenu, animated icon, and logo. Dropdown suggestions are backed by a `RecyclerView` and you can provide your own `RecyclerView.Adapter`, `ItemDecorator` or `ItemAnimator`. 
+Yet another floating search view implementation (also known as persistent search): that implementation fully supports menu (including submenu), animated icon, and logo. Dropdown suggestions are backed by a `RecyclerView` and you can provide your own `RecyclerView.Adapter`, `ItemDecorator` or `ItemAnimator`. 
 
 [DEMO APK](https://github.com/renaudcerrato/FloatingSearchView/raw/master/sample/sample-debug.apk)
 
@@ -12,7 +12,7 @@ Yet another floating search view implementation (also known as persistent search
 
 # Usage #
 
-Add a `FloatingSearchView` to your view hierarchy, make sure that it takes up the full width and height:
+Add a [`FloatingSearchView`](https://github.com/renaudcerrato/FloatingSearchView/blob/master/library/src/main/java/com/mypopsy/widget/FloatingSearchView.java) to your view hierarchy, make sure that it takes up the full width and height:
 
 ```
 <com.mypopsy.widget.FloatingSearchView
@@ -103,6 +103,7 @@ Then, apply your custom theme through [`app:theme`](https://chris.banes.me/2014/
 />
 ```
 
+Look at the [sample](https://github.com/renaudcerrato/FloatingSearchView/blob/master/sample/src/main/java/com/mypopsy/floatingsearchview/MainActivity.java).
 
 # Install #
 
