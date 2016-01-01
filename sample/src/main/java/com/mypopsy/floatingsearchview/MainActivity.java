@@ -18,6 +18,7 @@ import android.support.v7.widget.ActionMenuView;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.Html;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.view.HapticFeedbackConstants;
@@ -130,8 +131,12 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void search(String query) {
-        showProgressBar(mSearchView.isActivated());
-        mSearch.search(query);
+        if(TextUtils.isEmpty(query)) {
+            onSearchResults((SearchResult[])null);
+        }else {
+            showProgressBar(mSearchView.isActivated());
+            mSearch.search(query);
+        }
     }
 
     private void updateNavigationIcon(int itemId) {
