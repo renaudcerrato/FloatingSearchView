@@ -3,6 +3,7 @@ package com.mypopsy.floatingsearchview;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -18,6 +19,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
+import android.util.DisplayMetrics;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -31,6 +33,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mypopsy.drawable.SearchArrowDrawable;
+import com.mypopsy.drawable.ToggleDrawable;
+import com.mypopsy.drawable.model.CrossModel;
+import com.mypopsy.drawable.util.Bezier;
 import com.mypopsy.floatingsearchview.adapter.ArrayRecyclerAdapter;
 import com.mypopsy.floatingsearchview.dagger.DaggerAppComponent;
 import com.mypopsy.floatingsearchview.search.SearchController;
@@ -139,8 +144,7 @@ public class MainActivity extends AppCompatActivity implements
                 drawable = new android.support.v7.graphics.drawable.DrawerArrowDrawable(context);
                 break;
             case R.id.menu_icon_custom:
-                //TODO
-                drawable = null;
+                drawable = new CustomDrawable(context);
                 break;
         }
         drawable = DrawableCompat.wrap(drawable);
@@ -356,6 +360,26 @@ public class MainActivity extends AppCompatActivity implements
                     .setStartDelay(0)
                     .setInterpolator(INTERPOLATOR_REMOVE);
         }
+    }
 
+    private static class CustomDrawable extends ToggleDrawable {
+
+        public CustomDrawable(Context context) {
+            super(context);
+            float radius = dpToPx(9);
+
+            CrossModel cross = new CrossModel(radius*2);
+
+            // From circle to cross
+            add(Bezier.quadrant(radius, 0), cross.downLine);
+            add(Bezier.quadrant(radius, 90), cross.upLine);
+            add(Bezier.quadrant(radius, 180), cross.upLine);
+            add(Bezier.quadrant(radius, 270), cross.downLine);
+        }
+    }
+
+    private static int dpToPx(int dp){
+        DisplayMetrics metrics = Resources.getSystem().getDisplayMetrics();
+        return (int) (dp * metrics.density);
     }
 }
