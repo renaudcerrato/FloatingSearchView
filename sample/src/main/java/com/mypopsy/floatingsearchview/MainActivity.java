@@ -116,6 +116,7 @@ public class MainActivity extends AppCompatActivity implements
                 boolean textEmpty = mSearchView.getText().length() == 0;
 
                 showClearButton(focused && !textEmpty);
+                if(!focused) showProgressBar(false);
                 mSearchView.showLogo(!focused && textEmpty);
 
                 if (focused)
@@ -129,6 +130,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void search(String query) {
+        showProgressBar(mSearchView.isActivated());
         mSearch.search(query);
     }
 
@@ -204,7 +206,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onSearchStarted(String query) {
-        //TODO
+        //nothing to do
     }
 
     @Override
@@ -214,6 +216,7 @@ public class MainActivity extends AppCompatActivity implements
         if (searchResults != null) mAdapter.addAll(searchResults);
         mAdapter.setNotifyOnChange(true);
         mAdapter.notifyDataSetChanged();
+        showProgressBar(false);
     }
 
     @Override
@@ -232,6 +235,10 @@ public class MainActivity extends AppCompatActivity implements
             Toast.makeText(this, getString(R.string.speech_not_supported),
                     Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void showProgressBar(boolean show) {
+        mSearchView.getMenu().findItem(R.id.menu_progress).setVisible(show);
     }
 
     private void showClearButton(boolean show) {
@@ -288,31 +295,34 @@ public class MainActivity extends AppCompatActivity implements
     private class SuggestionViewHolder extends RecyclerView.ViewHolder {
 
         ImageView left,right;
-        TextView text;
+        TextView text, url;
 
         public SuggestionViewHolder(final View itemView) {
             super(itemView);
             left = (ImageView) itemView.findViewById(R.id.icon_start);
             right= (ImageView) itemView.findViewById(R.id.icon_end);
             text = (TextView) itemView.findViewById(R.id.text);
+            url = (TextView) itemView.findViewById(R.id.url);
             left.setImageResource(R.drawable.ic_google);
             text.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mSearchView.setText(text.getText());
                     mSearchView.setActivated(false);
+                    mSearchView.setText(text.getText());
                 }
             });
             right.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mSearchView.setText(text.getText().toString());
+                    mSearchView.setText(text.getText());
                 }
             });
         }
 
         void bind(SearchResult result) {
-            this.text.setText(Html.fromHtml(result.title));
+            text.setText(Html.fromHtml(result.title));
+            url.setText(result.visibleUrl);
+            url.setVisibility(result.visibleUrl == null ? View.GONE : View.VISIBLE);
         }
     }
 

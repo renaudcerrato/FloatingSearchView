@@ -3,6 +3,7 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item android:id="@+id/menu.clear" android:title="@string/menu.clear" android:icon="@drawable/ic_clear" app:showAsAction="always"/>
+    <item android:id="@+id/menu.progress" android:title="" app:actionViewClass="com.mypopsy.floatingsearchview.view.MenuProgressBar" app:showAsAction="always"/>
     <item android:id="@+id/menu.tts" android:title="@string/menu.tts" android:icon="@drawable/ic_microphone" app:showAsAction="ifRoom"/>
     <item android:id="@+id/menu.toggle.icon" android:title="@string/menu.toggle.icon" android:checkable="true" android:checked="true" app:showAsAction="never"/>
     <item android:title="@string/menu.icon.type" app:showAsAction="never">

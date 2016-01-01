@@ -12,18 +12,32 @@
         android:layout_gravity="center"
         style="@style/Widget.AppCompat.ActionButton"/>
 
-    <TextView
-        android:id="@+id/text"
+    <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:ellipsize="end"
+        android:orientation="vertical"
         android:paddingTop="4dp"
         android:paddingBottom="4dp"
         android:layout_marginLeft="4dp"
-        android:layout_marginStart="4dp"
-        android:layout_gravity="start|center_vertical"
-        android:background="?attr/selectableItemBackground"/>
+        android:layout_marginStart="4dp">
+        <TextView
+            android:id="@+id/text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:layout_gravity="start|center_vertical"
+            android:textAppearance="?android:attr/textAppearanceSearchResultTitle"
+            android:background="?attr/selectableItemBackground"/>
+        <TextView
+            android:id="@+id/url"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textAppearance="?android:attr/textAppearanceSearchResultSubtitle"
+            android:layout_gravity="start|center_vertical"/>
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/icon.end"

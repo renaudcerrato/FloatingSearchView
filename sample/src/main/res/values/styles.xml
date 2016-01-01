@@ -8,6 +8,8 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorControlNormal">@color/colorPrimary</item>
         <item name="android:windowBackground">@color/background</item>
+        <item name="android:textAppearanceSearchResultTitle">@style/textAppearanceSearchResultTitle</item>
+        <item name="android:textAppearanceSearchResultSubtitle">@style/textAppearanceSearchResultSubTitle</item>
     </style>
 
     <style name="CustomFloatingSearchViewTheme" parent="AppTheme">
@@ -21,5 +23,15 @@
         <item name="android:textSize">18sp</item>
         <item name="android:textColor">?android:attr/textColorPrimary</item>
         <item name="android:imeOptions">actionSearch</item>
+    </style>
+
+    <style name="textAppearanceSearchResultTitle" parent="TextAppearance.AppCompat.SearchResult.Title">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">?android:attr/textColorLink</item>
+    </style>
+
+    <style name="textAppearanceSearchResultSubTitle" parent="TextAppearance.AppCompat.SearchResult.Subtitle">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">?android:attr/textColorSecondary</item>
     </style>
 </resources>
