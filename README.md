@@ -1,6 +1,6 @@
 # FloatingSearchView #
 
-Yet another floating search view implementation (also known as persistent search): that implementation fully supports menu (including submenu), animated icon, and logo. Dropdown suggestions are backed by a `RecyclerView` and you can provide your own `RecyclerView.Adapter`, `ItemDecorator` or `ItemAnimator`. 
+Yet another floating search view implementation (also known as persistent search): that implementation fully supports menu (including submenu), logo and animated icon. Dropdown suggestions are backed by a `RecyclerView` and you can provide your own `RecyclerView.Adapter`, `ItemDecorator` or `ItemAnimator`. No hiding. 
 
 [DEMO APK](https://github.com/renaudcerrato/FloatingSearchView/raw/master/sample/sample-debug.apk)
 
@@ -68,8 +68,21 @@ Menu items can be automatically hidden when the search view gets focus depending
 </menu>
 ```
 
+## Animated Icon ##
 
-Since the implementation tries to focus on core logic instead of business logic as much as possible, common features like "tap to clear" or "indeterminate progress bar" are not built-in but can be easily implemented using menu as seen in the [sample](https://github.com/renaudcerrato/FloatingSearchView/blob/master/sample/src/main/java/com/mypopsy/floatingsearchview/MainActivity.java).
+`FloatingSearchView` will automagically animate icons drawable, given they declare a `progress` property: 
+
+* `void setProgress(float)`
+* `float getProgress()`
+
+> example: [`DrawerArrowDrawable`](https://developer.android.com/reference/android/support/v7/graphics/drawable/DrawerArrowDrawable.html) or [ToggleDrawable](https://github.com/renaudcerrato/ToggleDrawable)
+
+## Other ## 
+
+Since the implementation tries to focus on core logic instead of business logic as much as possible, common features like "tap to clear" or "indeterminate progress bar" are not built-in but can be easily implemented using menu.
+
+Look at the [sample](https://github.com/renaudcerrato/FloatingSearchView/blob/master/sample/src/main/java/com/mypopsy/floatingsearchview/MainActivity.java).
+
 
 # Styling #
 
