@@ -52,7 +52,7 @@ import rx.functions.Func1;
 import rx.functions.Func2;
 import rx.subjects.PublishSubject;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ActionMenuView.OnMenuItemClickListener{
 
     private static final int REQ_CODE_SPEECH_INPUT = 42;
 
@@ -93,31 +93,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mSearchView.setOnMenuItemClickListener(new ActionMenuView.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.menu_clear:
-                        mSearchView.setText(null);
-                        mSearchView.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
-                        break;
-                    case R.id.menu_toggle_icon:
-                        item.setChecked(!item.isChecked());
-                        mSearchView.showNavigationIcon(item.isChecked());
-                        break;
-                    case R.id.menu_tts:
-                        startTextToSpeech();
-                        break;
-                    case R.id.menu_icon_search:
-                    case R.id.menu_icon_drawer:
-                    case R.id.menu_icon_custom:
-                        updateNavigationIcon(item.getItemId());
-                        Toast.makeText(MainActivity.this, item.getTitle(), Toast.LENGTH_SHORT).show();
-                        break;
-                }
-                return true;
-            }
-        });
+        mSearchView.setOnMenuItemClickListener(this);
 
         mSearchView.addTextChangedListener(new TextWatcher() {
             @Override
@@ -170,7 +146,8 @@ public class MainActivity extends AppCompatActivity {
                 drawable = new android.support.v7.graphics.drawable.DrawerArrowDrawable(context);
                 break;
             case R.id.menu_icon_custom:
-                drawable = new SearchArrowDrawable(context);
+                //TODO
+                drawable = null;
                 break;
         }
         drawable = DrawableCompat.wrap(drawable);
@@ -186,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         mSubscription = mQuerySubject.asObservable()
-                .debounce(500, TimeUnit.MILLISECONDS)
+                .debounce(700, TimeUnit.MILLISECONDS)
                 .distinctUntilChanged()
                 .flatMap(new Func1<String, Observable<SearchResult[]>>() {
                              @Override
@@ -217,7 +194,6 @@ public class MainActivity extends AppCompatActivity {
         if(mSubscription != null) mSubscription.unsubscribe();
         mSubscription = null;
     }
-
 
     private Observable<SearchResult[]> getQueryObservable(String query) {
         return mSearch.search(query)
@@ -253,6 +229,30 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_clear:
+                mSearchView.setText(null);
+                mSearchView.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
+                break;
+            case R.id.menu_toggle_icon:
+                item.setChecked(!item.isChecked());
+                mSearchView.showNavigationIcon(item.isChecked());
+                break;
+            case R.id.menu_tts:
+                startTextToSpeech();
+                break;
+            case R.id.menu_icon_search:
+            case R.id.menu_icon_drawer:
+            case R.id.menu_icon_custom:
+                updateNavigationIcon(item.getItemId());
+                Toast.makeText(MainActivity.this, item.getTitle(), Toast.LENGTH_SHORT).show();
+                break;
+        }
+        return true;
+    }
+
     private void onSearchResults(SearchResult ...searchResults) {
         mAdapter.setNotifyOnChange(false);
         mAdapter.clear();
@@ -263,11 +263,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void startTextToSpeech() {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
-        intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
-                getString(R.string.speech_prompt));
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, getString(R.string.speech_prompt));
         try {
             startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
         } catch (ActivityNotFoundException a) {
@@ -287,7 +285,19 @@ public class MainActivity extends AppCompatActivity {
     private static SearchResult getErrorResult(Throwable throwable) {
         return new SearchResult(
                 "<font color='red'>"+
-                "<b>"+throwable.getClass().getSimpleName() + ":</b></font> " + throwable.getMessage());
+                "<b>"+throwable.getClass().getSimpleName()+":</b>"+
+                "</font> " + throwable.getMessage());
+    }
+
+    private static int getThemeAttrColor(Context context, @AttrRes int attr) {
+        final int[] TEMP_ARRAY = new int[1];
+        TEMP_ARRAY[0] = attr;
+        TypedArray a = context.obtainStyledAttributes(null, TEMP_ARRAY);
+        try {
+            return a.getColor(0, 0);
+        } finally {
+            a.recycle();
+        }
     }
 
     private class SearchAdapter extends ArrayRecyclerAdapter<SearchResult, SuggestionViewHolder> {
@@ -391,16 +401,5 @@ public class MainActivity extends AppCompatActivity {
                     .setInterpolator(INTERPOLATOR_REMOVE);
         }
 
-    }
-
-    private static int getThemeAttrColor(Context context, @AttrRes int attr) {
-        final int[] TEMP_ARRAY = new int[1];
-        TEMP_ARRAY[0] = attr;
-        TypedArray a = context.obtainStyledAttributes(null, TEMP_ARRAY);
-        try {
-            return a.getColor(0, 0);
-        } finally {
-            a.recycle();
-        }
     }
 }
