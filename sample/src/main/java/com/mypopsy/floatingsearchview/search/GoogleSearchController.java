@@ -8,8 +8,10 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import rx.Observable;
+import rx.Scheduler;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.functions.Func2;
@@ -21,6 +23,7 @@ public class GoogleSearchController implements SearchController {
     private static final int DEFAULT_DEBOUNCE = 700; // milliseconds
 
     private final GoogleSearch mSearch;
+    private final Scheduler.Worker mWorker;
     private PublishSubject<String> mQuerySubject = PublishSubject.create();
     private Subscription mSubscription;
     private Listener mListener;
@@ -28,6 +31,7 @@ public class GoogleSearchController implements SearchController {
     @Inject
     public GoogleSearchController(GoogleSearch search) {
         mSearch = search;
+        mWorker = AndroidSchedulers.mainThread().createWorker();
     }
 
     @Override
@@ -73,12 +77,12 @@ public class GoogleSearchController implements SearchController {
                 .flatMap(new Func1<String, Observable<SearchResult[]>>() {
                              @Override
                              public Observable<SearchResult[]> call(String query) {
-                                 if(mListener != null) mListener.onSearchStarted(query);
+                                 notifyStarted(query);
                                  return getQueryObservable(query)
                                          .onErrorResumeNext(new Func1<Throwable, Observable<SearchResult[]>>() {
                                              @Override
                                              public Observable<SearchResult[]> call(Throwable throwable) {
-                                                 if(mListener != null) mListener.onSearchError(throwable);
+                                                 notifyError(throwable);
                                                  return Observable.empty();
                                              }
                                          });
@@ -92,5 +96,29 @@ public class GoogleSearchController implements SearchController {
                         if(mListener != null) mListener.onSearchResults(searchResults);
                     }
                 });
+    }
+
+    private void notifyStarted(final String query) {
+        if(mListener == null) return;
+        dispatchOnMainThread(new Action0() {
+            @Override
+            public void call() {
+                mListener.onSearchStarted(query);
+            }
+        });
+    }
+
+    private void notifyError(final Throwable throwable) {
+        if(mListener == null) return;
+        dispatchOnMainThread(new Action0() {
+            @Override
+            public void call() {
+                mListener.onSearchError(throwable);
+            }
+        });
+    }
+
+    private void dispatchOnMainThread(Action0 action) {
+        mWorker.schedule(action);
     }
 }

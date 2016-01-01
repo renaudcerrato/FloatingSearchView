@@ -1,11 +1,13 @@
 package com.mypopsy.floatingsearchview.search;
 
+import android.support.annotation.MainThread;
+
 public interface SearchController {
 
     interface Listener {
-        void onSearchStarted(String query);
-        void onSearchResults(SearchResult ...results);
-        void onSearchError(Throwable throwable);
+        @MainThread void onSearchStarted(String query);
+        @MainThread void onSearchResults(SearchResult ...results);
+        @MainThread void onSearchError(Throwable throwable);
     }
 
     void setListener(Listener listener);
