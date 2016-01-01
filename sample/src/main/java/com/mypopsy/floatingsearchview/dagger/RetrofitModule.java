@@ -1,25 +1,41 @@
-package com.mypopsy.floatingsearchview.search;
+package com.mypopsy.floatingsearchview.dagger;
 
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.logging.HttpLoggingInterceptor;
 
+import javax.inject.Singleton;
+
+import dagger.Module;
+import dagger.Provides;
+import retrofit.Converter;
 import retrofit.GsonConverterFactory;
 import retrofit.Retrofit;
 import retrofit.RxJavaCallAdapterFactory;
 
-public class GoogleSearchFactory {
+@Module
+public class RetrofitModule {
 
-    static public GoogleSearch get() {
+    @Provides
+    @Singleton
+    OkHttpClient provideHttpClient() {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient httpClient = new OkHttpClient();
         httpClient.interceptors().add(logging);
+        return httpClient;
+    }
 
+    @Provides
+    @Singleton
+    Converter.Factory provideConverter() {
+        return GsonConverterFactory.create();
+    }
+
+    @Provides
+    Retrofit.Builder provideRetrofitBuilder(OkHttpClient httpClient, Converter.Factory factory) {
         return new Retrofit.Builder()
-                .baseUrl(GoogleSearch.BASE_URL)
                 .client(httpClient)
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create())
-                .build().create(GoogleSearch.class);
+                .addConverterFactory(factory);
     }
 }

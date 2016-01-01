@@ -18,7 +18,6 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -33,41 +32,35 @@ import android.widget.Toast;
 
 import com.mypopsy.drawable.SearchArrowDrawable;
 import com.mypopsy.floatingsearchview.adapter.ArrayRecyclerAdapter;
-import com.mypopsy.floatingsearchview.search.GoogleSearch;
-import com.mypopsy.floatingsearchview.search.GoogleSearchFactory;
-import com.mypopsy.floatingsearchview.search.Response;
+import com.mypopsy.floatingsearchview.dagger.DaggerAppComponent;
+import com.mypopsy.floatingsearchview.search.SearchController;
 import com.mypopsy.floatingsearchview.search.SearchResult;
 import com.mypopsy.widget.FloatingSearchView;
 
-import java.io.InterruptedIOException;
 import java.util.ArrayList;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
-import rx.Observable;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.functions.Func1;
-import rx.functions.Func2;
-import rx.subjects.PublishSubject;
+import javax.inject.Inject;
 
-public class MainActivity extends AppCompatActivity implements ActionMenuView.OnMenuItemClickListener{
+public class MainActivity extends AppCompatActivity implements
+        ActionMenuView.OnMenuItemClickListener,
+        SearchController.Listener {
 
     private static final int REQ_CODE_SPEECH_INPUT = 42;
 
     private FloatingSearchView mSearchView;
-    private GoogleSearch mSearch;
     private SearchAdapter mAdapter;
-    private PublishSubject<String> mQuerySubject = PublishSubject.create();
-    private Subscription mSubscription;
+
+    @Inject
+    SearchController mSearch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        DaggerAppComponent.builder().build().inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mSearch = GoogleSearchFactory.get();
+        mSearch.setListener(this);
 
         mSearchView = (FloatingSearchView) findViewById(R.id.search);
         mSearchView.setAdapter(mAdapter = new SearchAdapter());
@@ -103,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements ActionMenuView.On
             @Override
             public void onTextChanged(CharSequence query, int start, int before, int count) {
                 showClearButton(query.length() > 0 && mSearchView.isActivated());
-                doSearch(query.toString().trim());
+                search(query.toString().trim());
             }
 
             @Override
@@ -130,8 +123,8 @@ public class MainActivity extends AppCompatActivity implements ActionMenuView.On
         mSearchView.setText(null);
     }
 
-    private void doSearch(String query) {
-        mQuerySubject.onNext(query);
+    private void search(String query) {
+        mSearch.search(query);
     }
 
     private void updateNavigationIcon(int itemId) {
@@ -160,60 +153,6 @@ public class MainActivity extends AppCompatActivity implements ActionMenuView.On
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        mSubscription = mQuerySubject.asObservable()
-                .debounce(700, TimeUnit.MILLISECONDS)
-                .distinctUntilChanged()
-                .flatMap(new Func1<String, Observable<SearchResult[]>>() {
-                             @Override
-                             public Observable<SearchResult[]> call(String query) {
-                                 return getQueryObservable(query)
-                                         .onErrorResumeNext(new Func1<Throwable, Observable<SearchResult[]>>() {
-                                             @Override
-                                             public Observable<SearchResult[]> call(Throwable throwable) {
-                                                 Log.e(getClass().getSimpleName(), throwable.getMessage(), throwable);
-                                                 return Observable.just(new SearchResult[] {getErrorResult(throwable)});
-                                             }
-                                         });
-                             }
-                         }
-                )
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<SearchResult[]>() {
-                    @Override
-                    public void call(SearchResult[] searchResults) {
-                        onSearchResults(searchResults);
-                    }
-                });
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if(mSubscription != null) mSubscription.unsubscribe();
-        mSubscription = null;
-    }
-
-    private Observable<SearchResult[]> getQueryObservable(String query) {
-        return mSearch.search(query)
-                .flatMap(new Func1<Response, Observable<SearchResult[]>>() {
-                    @Override
-                    public Observable<SearchResult[]> call(Response response) {
-                        if (response.responseData == null)
-                            return Observable.error(new IllegalStateException(response.responseDetails));
-                        return Observable.just(response.responseData.results);
-                    }
-                })
-                .retry(new Func2<Integer, Throwable, Boolean>() {
-                    @Override
-                    public Boolean call(Integer integer, Throwable throwable) {
-                        return throwable instanceof InterruptedIOException;
-                    }
-                });
-    }
-
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -227,6 +166,12 @@ public class MainActivity extends AppCompatActivity implements ActionMenuView.On
                 break;
             }
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mSearch.cancel();
     }
 
     @Override
@@ -253,12 +198,23 @@ public class MainActivity extends AppCompatActivity implements ActionMenuView.On
         return true;
     }
 
-    private void onSearchResults(SearchResult ...searchResults) {
+    @Override
+    public void onSearchStarted(String query) {
+        //TODO
+    }
+
+    @Override
+    public void onSearchResults(SearchResult ...searchResults) {
         mAdapter.setNotifyOnChange(false);
         mAdapter.clear();
         if (searchResults != null) mAdapter.addAll(searchResults);
         mAdapter.setNotifyOnChange(true);
         mAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onSearchError(Throwable throwable) {
+        //TODO
     }
 
     private void startTextToSpeech() {
