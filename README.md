@@ -51,7 +51,6 @@ The implementation fully supports menu (and submenu):
 	...
 	app:fsv_menu="@menu/search"
 />
-    
 ```
 
 ```
@@ -61,23 +60,50 @@ mSearchView.setOnMenuItemClickListener(...);
 Menu items can be automatically hidden when the search view gets focus depending on the value of the MenuItem's `showAsAction`:
 
 ```
-<!-- res/menu/menu.xml -->
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/menu1" ... app:showAsAction="always"/> // always shown
-    <item android:id="@+id/menu2" ... app:showAsAction="ifRoom"/> // item will hide on focus 
-    <item android:id="@+id/menu3" ... app:showAsAction="never"/>  // item will go into the overflow menu
+    <item android:id="@+id/menu2" ... app:showAsAction="ifRoom"/> // will hide on focus 
+    <item android:id="@+id/menu3" ... app:showAsAction="never"/>  // will go into the overflow menu
 </menu>
 ```
 
 
+Since the implementation tries to focus on core logic instead of business logic as much as possible, common features like "tap to clear" or "indeterminate progress bar" are not built-in but can be easily implemented using menu as seen in the [sample](https://github.com/renaudcerrato/FloatingSearchView/blob/master/sample/src/main/java/com/mypopsy/floatingsearchview/MainActivity.java).
+
 
 # Styling #
-TODO
 
-# FAQ #
-TODO
-Since the implementation tries to focus on core logic instead of business logic as much as possible, common features like "tap to clear" or "indeterminate progress bar" are not built-in but can be easily implemented using menu as seen in the [sample](https://github.com/renaudcerrato/FloatingSearchView/blob/master/sample/src/main/java/com/mypopsy/floatingsearchview/MainActivity.java).
+`FloatingSearchView` do not expose most of TextView's XML attributes (`textColor`,`textSize`...). You can style them using themes attributes (using [`app:theme`](https://chris.banes.me/2014/10/17/appcompat-v21)  for example):
+
+First, create a dedicated theme, possibly heriting from your application theme:
+
+```
+<!-- your custom theme -->
+<style name="CustomFloatingSearchViewTheme" parent="AppTheme">
+    <item name="editTextStyle">@style/searchViewEditTextStyle</item>
+    <item name="android:divider">#c9c9c9</item>
+    <item name="android:dividerHeight">1dp</item>
+    <item name="colorControlNormal">#696969</item>
+</style>
+
+<!-- your custom search view text style --> 
+<style name="searchViewEditTextStyle" parent="Widget.AppCompat.EditText">
+    <item name="android:textSize">18sp</item>
+    <item name="android:textColor">?android:attr/textColorPrimary</item>
+    <item name="android:imeOptions">actionSearch</item>
+</style>
+```
+
+Then, apply your custom theme (using [`app:theme`](https://chris.banes.me/2014/10/17/appcompat-v21):
+
+```
+<com.mypopsy.widget.FloatingSearchView
+	...
+	app:theme="app:theme="@style/CustomFloatingSearchViewTheme""
+/>
+```
+
 
 # Install #
 
