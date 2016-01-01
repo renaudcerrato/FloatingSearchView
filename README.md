@@ -112,7 +112,7 @@ Then, apply your custom theme through [`app:theme`](https://chris.banes.me/2014/
 ```
 <com.mypopsy.widget.FloatingSearchView
 	...
-	app:theme="app:theme="@style/CustomFloatingSearchViewTheme""
+	app:theme="@style/CustomFloatingSearchViewTheme"
 />
 ```
 
