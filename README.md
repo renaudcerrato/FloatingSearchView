@@ -77,7 +77,7 @@ Menu items can be automatically hidden when the search view gets focus depending
 
 > example: [`DrawerArrowDrawable`](https://developer.android.com/reference/android/support/v7/graphics/drawable/DrawerArrowDrawable.html) or [ToggleDrawable](https://github.com/renaudcerrato/ToggleDrawable)
 
-## Other ## 
+## Other
 
 Since the implementation tries to focus on core logic instead of business logic as much as possible, common features like "tap to clear" or "indeterminate progress bar" are not built-in but can be easily implemented using menu.
 
