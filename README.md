@@ -28,6 +28,8 @@ Add a [`FloatingSearchView`](https://github.com/renaudcerrato/FloatingSearchView
         app:fsv_menu="@menu/search"/>
 ```
 
+See the [supported attributes](https://github.com/renaudcerrato/FloatingSearchView/blob/master/library/src/main/res/values/attrs.xml).
+
 Then, configure your instance and set your listeners to react accordingly:
 
 ```
@@ -38,25 +40,6 @@ mSearchView.setOnIconClickListener(...);
 mSearchView.setOnSearchListener(...);  
 mSearchView.addTextChangedListener(...);
 mSearchView.setOnSearchFocusChangedListener(...);
-```
-
-Supported attributes:
-
-```
-<declare-styleable name="FloatingSearchView">
-	<attr name="fsv_searchBarWidth" format="dimension|reference"/>
-	<attr name="fsv_menu" format="reference"/>
-	<attr name="fsv_contentBackgroundColor" format="color|reference"/>
-	<attr name="fsv_cornerRadius" format="dimension|reference"/>
-	<attr name="fsv_icon" format="reference"/>
-	<attr name="logo"/>
-	<attr name="contentInsetStart"/>
-	<attr name="contentInsetEnd"/>
-	<attr name="android:divider"/>
-	<attr name="android:dividerHeight"/>
-	<attr name="android:hint"/>
-	<attr name="popupTheme"/>
-</declare-styleable>
 ```
 
 Look at the [sample](https://github.com/renaudcerrato/FloatingSearchView/blob/master/sample/src/main/java/com/mypopsy/floatingsearchview/MainActivity.java).
