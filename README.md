@@ -71,10 +71,9 @@ Menu items can be automatically hidden when the search view gets focus depending
 
 Since the implementation tries to focus on core logic instead of business logic as much as possible, common features like "tap to clear" or "indeterminate progress bar" are not built-in but can be easily implemented using menu as seen in the [sample](https://github.com/renaudcerrato/FloatingSearchView/blob/master/sample/src/main/java/com/mypopsy/floatingsearchview/MainActivity.java).
 
-
 # Styling #
 
-`FloatingSearchView` do not expose most of TextView's XML attributes (`textColor`,`textSize`...). You can style them using themes attributes (using [`app:theme`](https://chris.banes.me/2014/10/17/appcompat-v21)  for example):
+`FloatingSearchView` do not expose most of TextView's XML attributes (`textColor`,`textSize`...). You can style them using theme attributes by applying [`app:theme`](https://chris.banes.me/2014/10/17/appcompat-v21)  for example:
 
 First, create a dedicated theme, possibly heriting from your application theme:
 
@@ -95,7 +94,7 @@ First, create a dedicated theme, possibly heriting from your application theme:
 </style>
 ```
 
-Then, apply your custom theme (using [`app:theme`](https://chris.banes.me/2014/10/17/appcompat-v21):
+Then, apply your custom theme through [`app:theme`](https://chris.banes.me/2014/10/17/appcompat-v21):
 
 ```
 <com.mypopsy.widget.FloatingSearchView
