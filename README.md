@@ -14,7 +14,7 @@ Yet another floating search view implementation (also known as persistent search
 
 Add a [`FloatingSearchView`](https://github.com/renaudcerrato/FloatingSearchView/blob/master/library/src/main/java/com/mypopsy/widget/FloatingSearchView.java) to your view hierarchy, make sure that it takes up the full width and height:
 
-```
+```xml
 <com.mypopsy.widget.FloatingSearchView
         android:id="@+id/search"
         android:layout_width="match_parent"
@@ -32,7 +32,7 @@ See the [supported attributes](https://github.com/renaudcerrato/FloatingSearchVi
 
 Then, configure your instance and set your listeners to react accordingly:
 
-```
+```java
 mSuggestionsAdapter = new MySuggestionsAdapter(); // use a RecyclerView.Adapter
 mSearchView.setAdapter(mSuggestionsAdapter);
 ...
@@ -48,7 +48,7 @@ Look at the [sample](https://github.com/renaudcerrato/FloatingSearchView/blob/ma
 
 The implementation fully supports menu (and submenu):
 
-```
+```xml
 <com.mypopsy.widget.FloatingSearchView
 	...
 	app:fsv_menu="@menu/search"
@@ -61,7 +61,7 @@ mSearchView.setOnMenuItemClickListener(...);
 
 Menu items can be automatically hidden when the search view gets focus depending on the value of the MenuItem's `showAsAction`:
 
-```
+```xml
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/menu1" ... app:showAsAction="always"/> // always shown
@@ -90,7 +90,7 @@ Since the implementation tries to focus on core logic instead of business logic 
 
 First, create a dedicated theme, possibly heriting from your application theme:
 
-```
+```xml
 <!-- your custom theme -->
 <style name="CustomFloatingSearchViewTheme" parent="AppTheme">
     <item name="editTextStyle">@style/searchViewEditTextStyle</item>
@@ -109,7 +109,7 @@ First, create a dedicated theme, possibly heriting from your application theme:
 
 Then, apply your custom theme through [`app:theme`](https://chris.banes.me/2014/10/17/appcompat-v21):
 
-```
+```xml
 <com.mypopsy.widget.FloatingSearchView
 	...
 	app:theme="@style/CustomFloatingSearchViewTheme"
