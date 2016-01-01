@@ -1,6 +1,8 @@
 package com.mypopsy.floatingsearchview.search;
 
 
+import android.text.TextUtils;
+
 import java.io.InterruptedIOException;
 import java.util.concurrent.TimeUnit;
 
@@ -75,6 +77,7 @@ public class GoogleSearchController implements SearchController {
                 .flatMap(new Func1<String, Observable<SearchResult[]>>() {
                              @Override
                              public Observable<SearchResult[]> call(String query) {
+                                 if(TextUtils.isEmpty(query)) return Observable.just(null);
                                  notifyStarted(query);
                                  return getQueryObservable(query)
                                          .onErrorResumeNext(new Func1<Throwable, Observable<SearchResult[]>>() {

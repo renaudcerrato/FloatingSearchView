@@ -127,12 +127,8 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void search(String query) {
-        if(TextUtils.isEmpty(query)) {
-            onSearchResults((SearchResult[])null);
-        }else {
-            showProgressBar(mSearchView.isActivated());
-            mSearch.search(query);
-        }
+        showProgressBar(mSearchView.isActivated());
+        mSearch.search(query);
     }
 
     private void updateNavigationIcon(int itemId) {
