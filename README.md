@@ -55,7 +55,7 @@ The implementation fully supports menu (and submenu):
 />
 ```
 
-```
+```java
 mSearchView.setOnMenuItemClickListener(...);
 ```
 
