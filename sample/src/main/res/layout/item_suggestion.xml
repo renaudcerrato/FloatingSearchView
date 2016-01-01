@@ -22,7 +22,7 @@
         android:paddingBottom="4dp"
         android:layout_marginLeft="4dp"
         android:layout_marginStart="4dp"
-        android:gravity="start|center_vertical"
+        android:layout_gravity="start|center_vertical"
         android:background="?attr/selectableItemBackground"/>
 
     <ImageView
