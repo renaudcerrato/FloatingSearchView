@@ -214,7 +214,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onSearchError(Throwable throwable) {
-        //TODO
+        onSearchResults(getErrorResult(throwable));
     }
 
     private void startTextToSpeech() {
