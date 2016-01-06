@@ -120,7 +120,7 @@ Look at the [sample](https://github.com/renaudcerrato/FloatingSearchView/blob/ma
 
 # Install
 
-This repositery can be found on JitPack:
+This repository can be found on JitPack:
 
 https://jitpack.io/#renaudcerrato/FloatingSearchView
 
