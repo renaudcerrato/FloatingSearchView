@@ -1,4 +1,4 @@
-package com.mypopsy.floatingsearchview.search;
+package com.mypopsy.floatingsearchview.demo.search;
 
 public class SearchResult {
     public String visibleUrl;

@@ -1,4 +1,4 @@
-package com.mypopsy.floatingsearchview.search;
+package com.mypopsy.floatingsearchview.demo.search;
 
 /**
  * Created by renaud on 01/01/16.

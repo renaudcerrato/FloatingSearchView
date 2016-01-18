@@ -1,4 +1,4 @@
-package com.mypopsy.floatingsearchview.search;
+package com.mypopsy.floatingsearchview.demo.search;
 
 
 import retrofit.http.GET;

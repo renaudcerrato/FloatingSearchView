@@ -1,7 +1,7 @@
-package com.mypopsy.floatingsearchview.dagger;
+package com.mypopsy.floatingsearchview.demo.dagger;
 
-import com.mypopsy.floatingsearchview.MainActivity;
-import com.mypopsy.floatingsearchview.search.SearchController;
+import com.mypopsy.floatingsearchview.demo.MainActivity;
+import com.mypopsy.floatingsearchview.demo.search.SearchController;
 
 import javax.inject.Singleton;
 

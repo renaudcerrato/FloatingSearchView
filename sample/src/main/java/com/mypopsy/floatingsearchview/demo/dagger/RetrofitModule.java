@@ -1,4 +1,4 @@
-package com.mypopsy.floatingsearchview.dagger;
+package com.mypopsy.floatingsearchview.demo.dagger;
 
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.logging.HttpLoggingInterceptor;

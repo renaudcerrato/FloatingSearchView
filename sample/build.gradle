@@ -6,7 +6,7 @@ android {
     buildToolsVersion "23.0.2"
 
     defaultConfig {
-        applicationId "com.mypopsy.floatingsearchview"
+        applicationId "com.mypopsy.floatingsearchview.demo"
         minSdkVersion 15
         targetSdkVersion 23
         versionCode 1

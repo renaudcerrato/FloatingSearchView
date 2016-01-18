@@ -42,6 +42,7 @@ import android.view.animation.Interpolator;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import com.mypopsy.floatingsearchview.R;
 import com.mypopsy.widget.internal.RoundRectDrawableWithShadow;
 import com.mypopsy.widget.internal.SuggestionItemDecorator;
 import com.mypopsy.widget.internal.ViewUtils;

@@ -1,4 +1,4 @@
-package com.mypopsy.floatingsearchview.adapter;
+package com.mypopsy.floatingsearchview.demo.adapter;
 
 import android.support.v7.widget.RecyclerView;
 

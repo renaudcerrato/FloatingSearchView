@@ -1,4 +1,4 @@
-package com.mypopsy.floatingsearchview.search;
+package com.mypopsy.floatingsearchview.demo.search;
 
 import android.support.annotation.MainThread;
 

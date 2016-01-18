@@ -1,4 +1,4 @@
-package com.mypopsy.floatingsearchview.utils;
+package com.mypopsy.floatingsearchview.demo.utils;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
@@ -11,7 +11,7 @@ import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
 import android.widget.Toast;
 
-import com.mypopsy.floatingsearchview.R;
+import com.mypopsy.floatingsearchview.demo.R;
 
 import java.util.Locale;
 

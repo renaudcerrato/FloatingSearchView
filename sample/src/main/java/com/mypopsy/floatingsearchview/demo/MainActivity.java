@@ -1,4 +1,4 @@
-package com.mypopsy.floatingsearchview;
+package com.mypopsy.floatingsearchview.demo;
 
 import android.content.Context;
 import android.content.Intent;
@@ -32,12 +32,12 @@ import com.mypopsy.drawable.SearchArrowDrawable;
 import com.mypopsy.drawable.ToggleDrawable;
 import com.mypopsy.drawable.model.CrossModel;
 import com.mypopsy.drawable.util.Bezier;
-import com.mypopsy.floatingsearchview.adapter.ArrayRecyclerAdapter;
-import com.mypopsy.floatingsearchview.dagger.DaggerAppComponent;
-import com.mypopsy.floatingsearchview.search.SearchController;
-import com.mypopsy.floatingsearchview.search.SearchResult;
-import com.mypopsy.floatingsearchview.utils.PackageUtils;
-import com.mypopsy.floatingsearchview.utils.ViewUtils;
+import com.mypopsy.floatingsearchview.demo.adapter.ArrayRecyclerAdapter;
+import com.mypopsy.floatingsearchview.demo.dagger.DaggerAppComponent;
+import com.mypopsy.floatingsearchview.demo.search.SearchController;
+import com.mypopsy.floatingsearchview.demo.search.SearchResult;
+import com.mypopsy.floatingsearchview.demo.utils.PackageUtils;
+import com.mypopsy.floatingsearchview.demo.utils.ViewUtils;
 import com.mypopsy.widget.FloatingSearchView;
 
 import java.util.ArrayList;

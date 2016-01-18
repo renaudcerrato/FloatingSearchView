@@ -1,4 +1,4 @@
-package com.mypopsy.floatingsearchview.utils;
+package com.mypopsy.floatingsearchview.demo.utils;
 
 import android.content.Context;
 import android.content.res.Resources;
