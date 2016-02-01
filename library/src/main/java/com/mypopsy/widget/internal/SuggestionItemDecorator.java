@@ -33,7 +33,8 @@ public class SuggestionItemDecorator extends RecyclerView.ItemDecoration {
     public void onDraw(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
         int visibleCount = parent.getChildCount();
         int count = state.getItemCount();
-        int adapterCount = parent.getAdapter().getItemCount();
+        RecyclerView.Adapter adapter = parent.getAdapter();
+        int adapterCount = adapter != null ? adapter.getItemCount() : 0;
 
         for (int i = 0; i < visibleCount; i++) {
             View view = parent.getChildAt(i);
