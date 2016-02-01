@@ -138,7 +138,7 @@ allprojects {
 Add the dependency:
 ```
 dependencies {
-	        compile 'com.github.renaudcerrato:FloatingSearchView:1.0.0'
+	        compile 'com.github.renaudcerrato:FloatingSearchView:1.0.1'
 	}
 ```
 
