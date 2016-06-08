@@ -3,7 +3,7 @@
        xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <include layout="@layout/fsv_search_query_layout"
-             android:id="@+id/fsv.search.container"
+             android:id="@+id/fsv_search_container"
              android:layout_width="match_parent"
              android:layout_height="wrap_content"
              android:layout_centerHorizontal="true"
@@ -11,22 +11,22 @@
              tools:ignore="UnusedAttribute"/>
 
     <FrameLayout
-        android:id="@+id/fsv.suggestions.container"
+        android:id="@+id/fsv_suggestions_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/fsv.search.container"
-        android:layout_alignStart="@id/fsv.search.container"
-        android:layout_alignLeft="@id/fsv.search.container">
+        android:layout_below="@id/fsv_search_container"
+        android:layout_alignStart="@id/fsv_search_container"
+        android:layout_alignLeft="@id/fsv_search_container">
 
         <view class="com.mypopsy.widget.FloatingSearchView$RecyclerView"
-              android:id="@+id/fsv.suggestions.list"
+              android:id="@+id/fsv_suggestions_list"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:overScrollMode="never"
               app:layoutManager="LinearLayoutManager"
             />
 
-        <View android:id="@+id/fsv.suggestions.divider"
+        <View android:id="@+id/fsv_suggestions_divider"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:visibility="invisible"

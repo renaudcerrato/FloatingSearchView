@@ -10,13 +10,13 @@
         style="@style/Widget.AppCompat.ActionButton"/>
 
     <ImageButton
-        android:id="@+id/fsv.search.action.navigation"
+        android:id="@+id/fsv_search_action_navigation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         style="@style/Widget.AppCompat.ActionButton"/>
 
     <view class="com.mypopsy.widget.FloatingSearchView$LogoEditText"
-        android:id="@+id/fsv.search.text"
+        android:id="@+id/fsv_search_text"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
@@ -29,7 +29,7 @@
         android:background="@null"/>
 
     <android.support.v7.widget.ActionMenuView
-        android:id="@+id/fsv.search.action.menu"
+        android:id="@+id/fsv_search_action_menu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:minHeight="48dp"/>

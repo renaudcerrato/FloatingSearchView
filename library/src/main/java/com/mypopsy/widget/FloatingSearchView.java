@@ -135,7 +135,11 @@ public class FloatingSearchView extends RelativeLayout {
     public FloatingSearchView(Context context, AttributeSet attrs, @AttrRes int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        mActivity = getActivity();
+        if (isInEditMode()) {
+            mActivity = null;
+        } else {
+            mActivity = getActivity();
+        }
 
         setFocusable(true);
         setFocusableInTouchMode(true);
@@ -292,6 +296,7 @@ public class FloatingSearchView extends RelativeLayout {
 
     public void inflateMenu(@MenuRes int menuRes) {
         if(menuRes == 0) return;
+        if (isInEditMode()) return;
         getActivity().getMenuInflater().inflate(menuRes, mActionMenu.getMenu());
 
         XmlResourceParser parser = null;

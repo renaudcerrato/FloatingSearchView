@@ -8,6 +8,7 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorControlNormal">@color/colorPrimary</item>
         <item name="android:windowBackground">@color/background</item>
+        <item name="floatingSearchViewStyle">@style/CustomFloatingSearchViewTheme</item>
         <item name="android:textAppearanceSearchResultTitle">@style/textAppearanceSearchResultTitle</item>
         <item name="android:textAppearanceSearchResultSubtitle">@style/textAppearanceSearchResultSubTitle</item>
     </style>
