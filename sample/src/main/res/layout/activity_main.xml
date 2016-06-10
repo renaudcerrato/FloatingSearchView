@@ -6,7 +6,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.mypopsy.floatingsearchview.MainActivity">
+    tools:context="com.mypopsy.floatingsearchview.demo.MainActivity">
 
     <android.support.design.widget.FloatingActionButton
         android:layout_width="wrap_content"
@@ -30,6 +30,7 @@
         android:hint="@string/hint"
         app:logo="@drawable/logo"
         app:fsv_menu="@menu/search"
+        tools:context="com.mypopsy.floatingsearchview.demo.MainActivity"
         app:theme="@style/CustomFloatingSearchViewTheme"/>
 
 </android.support.design.widget.CoordinatorLayout>
