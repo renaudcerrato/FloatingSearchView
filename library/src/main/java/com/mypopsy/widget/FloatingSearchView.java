@@ -146,7 +146,7 @@ public class FloatingSearchView extends RelativeLayout {
 
         inflate(getContext(), R.layout.fsv_floating_search_layout, this);
 
-        mSearchInput = (LogoEditText)findViewById(R.id.fsv_search_text);
+        mSearchInput = (LogoEditText) findViewById(R.id.fsv_search_text);
         mNavButtonView = (ImageView) findViewById(R.id.fsv_search_action_navigation);
         mRecyclerView = (RecyclerView) findViewById(R.id.fsv_suggestions_list);
         mDivider = findViewById(R.id.fsv_suggestions_divider);
@@ -183,7 +183,7 @@ public class FloatingSearchView extends RelativeLayout {
 
         MarginLayoutParams dividerLP = (MarginLayoutParams) mDivider.getLayoutParams();
 
-        if(mDivider.getBackground() != null && dividerHeight != -1)
+        if (mDivider.getBackground() != null && dividerHeight != -1)
             dividerLP.height = dividerHeight;
 
         float maxShadowSize = mSearchBackground.getMaxShadowSize();
@@ -234,7 +234,7 @@ public class FloatingSearchView extends RelativeLayout {
 
         mBackgroundDrawable = getBackground();
 
-        if(mBackgroundDrawable != null)
+        if (mBackgroundDrawable != null)
             mBackgroundDrawable = mBackgroundDrawable.mutate();
         else
             mBackgroundDrawable = new ColorDrawable(DEFAULT_BACKGROUND_COLOR);
@@ -245,7 +245,7 @@ public class FloatingSearchView extends RelativeLayout {
         mNavButtonView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mNavigationClickListener != null)
+                if (mNavigationClickListener != null)
                     mNavigationClickListener.onNavigationClick();
             }
         });
@@ -295,7 +295,7 @@ public class FloatingSearchView extends RelativeLayout {
     }
 
     public void inflateMenu(@MenuRes int menuRes) {
-        if(menuRes == 0) return;
+        if (menuRes == 0) return;
         if (isInEditMode()) return;
         getActivity().getMenuInflater().inflate(menuRes, mActionMenu.getMenu());
 
@@ -342,19 +342,19 @@ public class FloatingSearchView extends RelativeLayout {
 
     @Override
     public void setActivated(boolean activated) {
-        if(activated == isActivated()) return;
+        if (activated == isActivated()) return;
 
         super.setActivated(activated);
 
-        if(activated) {
+        if (activated) {
             mSearchInput.requestFocus();
             ViewUtils.showSoftKeyboardDelayed(mSearchInput, 100);
-        }else {
+        } else {
             requestFocus();
             ViewUtils.closeSoftKeyboard(mActivity);
         }
 
-        if(mFocusListener != null)
+        if (mFocusListener != null)
             mFocusListener.onFocusChanged(activated);
 
         showMenu(!activated);
@@ -380,7 +380,7 @@ public class FloatingSearchView extends RelativeLayout {
 
     public void setAdapter(RecyclerView.Adapter<? extends RecyclerView.ViewHolder> adapter) {
         RecyclerView.Adapter<? extends RecyclerView.ViewHolder> old = getAdapter();
-        if(old != null) old.unregisterAdapterDataObserver(mAdapterObserver);
+        if (old != null) old.unregisterAdapterDataObserver(mAdapterObserver);
         adapter.registerAdapterDataObserver(mAdapterObserver);
         mRecyclerView.setAdapter(adapter);
     }
@@ -420,7 +420,7 @@ public class FloatingSearchView extends RelativeLayout {
     }
 
     public Drawable getIcon() {
-        if(mNavButtonView == null) return null;
+        if (mNavButtonView == null) return null;
         return mNavButtonView.getDrawable();
     }
 
@@ -437,7 +437,7 @@ public class FloatingSearchView extends RelativeLayout {
     private void fadeIn(boolean enter) {
         ValueAnimator backgroundAnim;
 
-        if(Build.VERSION.SDK_INT >= 19)
+        if (Build.VERSION.SDK_INT >= 19)
             backgroundAnim = ObjectAnimator.ofInt(mBackgroundDrawable, "alpha", enter ? 255 : 0);
         else {
             backgroundAnim = ValueAnimator.ofInt(enter ? 0 : 255, enter ? 255 : 0);
@@ -456,7 +456,7 @@ public class FloatingSearchView extends RelativeLayout {
 
         Drawable icon = unwrap(getIcon());
 
-        if(icon != null) {
+        if (icon != null) {
             ObjectAnimator iconAnim = ObjectAnimator.ofFloat(icon, "progress", enter ? 1 : 0);
             iconAnim.setDuration(backgroundAnim.getDuration());
             iconAnim.setInterpolator(backgroundAnim.getInterpolator());
@@ -466,7 +466,7 @@ public class FloatingSearchView extends RelativeLayout {
 
     private int getSuggestionsCount() {
         RecyclerView.Adapter<? extends RecyclerView.ViewHolder> adapter = getAdapter();
-        if(adapter == null) return 0;
+        if (adapter == null) return 0;
         return adapter.getItemCount();
     }
 
@@ -479,7 +479,7 @@ public class FloatingSearchView extends RelativeLayout {
     }
 
     private void showSuggestions(final boolean show) {
-        if(show == suggestionsShown()) return;
+        if (show == suggestionsShown()) return;
 
         mSuggestionsShown = show;
 
@@ -489,7 +489,7 @@ public class FloatingSearchView extends RelativeLayout {
         final Runnable endAction = new Runnable() {
             @Override
             public void run() {
-                if(show)
+                if (show)
                     updateDivider();
                 else {
                     showDivider(false);
@@ -499,12 +499,12 @@ public class FloatingSearchView extends RelativeLayout {
             }
         };
 
-        if(show) {
+        if (show) {
             updateDivider();
             mRecyclerView.setVisibility(VISIBLE);
-            if(mRecyclerView.getTranslationY() == 0)
+            if (mRecyclerView.getTranslationY() == 0)
                 mRecyclerView.setTranslationY(-mRecyclerView.getHeight());
-        }else if(childCount > 0)
+        } else if (childCount > 0)
             translation = -mRecyclerView.getChildAt(childCount - 1).getBottom();
         else
             showDivider(false);
@@ -516,7 +516,7 @@ public class FloatingSearchView extends RelativeLayout {
                 .withLayer()
                 .withEndAction(endAction);
 
-        if(show || childCount > 0)
+        if (show || childCount > 0)
             listAnim.start();
         else
             endAction.run();
@@ -524,8 +524,8 @@ public class FloatingSearchView extends RelativeLayout {
 
     private void showDivider(boolean visible) {
         mDivider.setVisibility(visible ? View.VISIBLE : View.GONE);
-        int shadows = TOP|LEFT|RIGHT;
-        if(!visible) shadows|=BOTTOM;
+        int shadows = TOP | LEFT | RIGHT;
+        if (!visible) shadows |= BOTTOM;
         mSearchBackground.setShadow(shadows);
     }
 
@@ -538,18 +538,18 @@ public class FloatingSearchView extends RelativeLayout {
         Context context = getContext();
         while (context instanceof ContextWrapper) {
             if (context instanceof Activity) {
-                return (Activity)context;
+                return (Activity) context;
             }
-            context = ((ContextWrapper)context).getBaseContext();
+            context = ((ContextWrapper) context).getBaseContext();
         }
         throw new IllegalStateException();
     }
 
     private void showMenu(final boolean visible) {
         Menu menu = getMenu();
-        for(int i = 0; i < menu.size(); i++) {
+        for (int i = 0; i < menu.size(); i++) {
             MenuItem item = menu.getItem(i);
-            if(mAlwaysShowingMenu.contains(item.getItemId())) continue;
+            if (mAlwaysShowingMenu.contains(item.getItemId())) continue;
             item.setVisible(visible);
         }
     }
@@ -591,9 +591,9 @@ public class FloatingSearchView extends RelativeLayout {
                         TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.MenuItem);
                         int itemShowAsAction = a.getInt(R.styleable.MenuItem_showAsAction, -1);
 
-                        if((itemShowAsAction & MenuItem.SHOW_AS_ACTION_ALWAYS) != 0) {
+                        if ((itemShowAsAction & MenuItem.SHOW_AS_ACTION_ALWAYS) != 0) {
                             int itemId = a.getResourceId(R.styleable.MenuItem_android_id, NO_ID);
-                            if(itemId != NO_ID) mAlwaysShowingMenu.add(itemId);
+                            if (itemId != NO_ID) mAlwaysShowingMenu.add(itemId);
                         }
                         a.recycle();
                     } else {
@@ -621,12 +621,6 @@ public class FloatingSearchView extends RelativeLayout {
     }
 
     static private Drawable unwrap(Drawable icon) {
-        if(icon instanceof android.support.v7.graphics.drawable.DrawableWrapper)
-            return ((android.support.v7.graphics.drawable.DrawableWrapper)icon).getWrappedDrawable();
-        if(icon instanceof android.support.v4.graphics.drawable.DrawableWrapper)
-            return ((android.support.v4.graphics.drawable.DrawableWrapper)icon).getWrappedDrawable();
-        if(Build.VERSION.SDK_INT >= 23 && icon instanceof android.graphics.drawable.DrawableWrapper)
-            return ((android.graphics.drawable.DrawableWrapper)icon).getDrawable();
         return DrawableCompat.unwrap(icon);
     }
 
@@ -674,7 +668,7 @@ public class FloatingSearchView extends RelativeLayout {
         }
 
         public void setLogo(@DrawableRes int res) {
-            if(res == 0)
+            if (res == 0)
                 setLogo(null);
             else
                 setLogo(ResourcesCompat.getDrawable(getResources(), res, getContext().getTheme()));
@@ -687,21 +681,21 @@ public class FloatingSearchView extends RelativeLayout {
 
         @Override
         protected void onDraw(Canvas canvas) {
-            if(logoShown && logo != null) {
-                if(dirty) {
+            if (logoShown && logo != null) {
+                if (dirty) {
                     updateLogoBounds();
                     dirty = false;
                 }
                 logo.draw(canvas);
-            }else
+            } else
                 super.onDraw(canvas);
         }
 
         // fit center
         private void updateLogoBounds() {
             int logoHeight = Math.min(getHeight(), logo.getIntrinsicHeight());
-            int top = (getHeight() - logoHeight)/2;
-            int logoWidth = (logo.getIntrinsicWidth()*logoHeight)/logo.getIntrinsicHeight();
+            int top = (getHeight() - logoHeight) / 2;
+            int logoWidth = (logo.getIntrinsicWidth() * logoHeight) / logo.getIntrinsicHeight();
             logo.setBounds(0, top, logoWidth, top + logoHeight);
         }
     }

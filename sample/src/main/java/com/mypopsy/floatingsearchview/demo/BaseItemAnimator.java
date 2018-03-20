@@ -15,7 +15,6 @@
  */
 package com.mypopsy.floatingsearchview.demo;
 
-import android.support.v4.animation.AnimatorCompatHelper;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorCompat;
 import android.support.v4.view.ViewPropertyAnimatorListener;
@@ -61,13 +60,14 @@ abstract public class BaseItemAnimator extends SimpleItemAnimator {
     private static class ChangeInfo {
         public ViewHolder oldHolder, newHolder;
         public int fromX, fromY, toX, toY;
+
         private ChangeInfo(ViewHolder oldHolder, ViewHolder newHolder) {
             this.oldHolder = oldHolder;
             this.newHolder = newHolder;
         }
 
         private ChangeInfo(ViewHolder oldHolder, ViewHolder newHolder,
-                int fromX, int fromY, int toX, int toY) {
+                           int fromX, int fromY, int toX, int toY) {
             this(oldHolder, newHolder);
             this.fromX = fromX;
             this.fromY = fromY;
@@ -191,7 +191,7 @@ abstract public class BaseItemAnimator extends SimpleItemAnimator {
 
     private void animateRemoveImpl(final ViewHolder holder) {
         final ViewPropertyAnimatorCompat animation = onAnimateRemove(holder);
-        if(animation == null) {
+        if (animation == null) {
             dispatchRemoveFinished(holder);
             return;
         }
@@ -232,7 +232,7 @@ abstract public class BaseItemAnimator extends SimpleItemAnimator {
 
     private void animateAddImpl(final ViewHolder holder) {
         final ViewPropertyAnimatorCompat animation = onAnimateAdd(holder);
-        if(animation == null) {
+        if (animation == null) {
             dispatchAddFinished(holder);
             return;
         }
@@ -243,6 +243,7 @@ abstract public class BaseItemAnimator extends SimpleItemAnimator {
                     public void onAnimationStart(View view) {
                         dispatchAddStarting(holder);
                     }
+
                     @Override
                     public void onAnimationCancel(View view) {
                         ViewCompat.setAlpha(view, 1);
@@ -260,7 +261,7 @@ abstract public class BaseItemAnimator extends SimpleItemAnimator {
 
     @Override
     public boolean animateMove(final ViewHolder holder, int fromX, int fromY,
-            int toX, int toY) {
+                               int toX, int toY) {
         final View view = holder.itemView;
         fromX += ViewCompat.getTranslationX(holder.itemView);
         fromY += ViewCompat.getTranslationY(holder.itemView);
@@ -301,6 +302,7 @@ abstract public class BaseItemAnimator extends SimpleItemAnimator {
             public void onAnimationStart(View view) {
                 dispatchMoveStarting(holder);
             }
+
             @Override
             public void onAnimationCancel(View view) {
                 if (deltaX != 0) {
@@ -310,6 +312,7 @@ abstract public class BaseItemAnimator extends SimpleItemAnimator {
                     ViewCompat.setTranslationY(view, 0);
                 }
             }
+
             @Override
             public void onAnimationEnd(View view) {
                 animation.setListener(null);
@@ -322,7 +325,7 @@ abstract public class BaseItemAnimator extends SimpleItemAnimator {
 
     @Override
     public boolean animateChange(ViewHolder oldHolder, ViewHolder newHolder,
-            int fromX, int fromY, int toX, int toY) {
+                                 int fromX, int fromY, int toX, int toY) {
         if (oldHolder == newHolder) {
             // Don't know how to run change animations when the same view holder is re-used.
             // run a move animation to handle position changes.
@@ -387,6 +390,7 @@ abstract public class BaseItemAnimator extends SimpleItemAnimator {
                 public void onAnimationStart(View view) {
                     dispatchChangeStarting(changeInfo.newHolder, false);
                 }
+
                 @Override
                 public void onAnimationEnd(View view) {
                     newViewAnimation.setListener(null);
@@ -420,6 +424,7 @@ abstract public class BaseItemAnimator extends SimpleItemAnimator {
             endChangeAnimationIfNecessary(changeInfo, changeInfo.newHolder);
         }
     }
+
     private boolean endChangeAnimationIfNecessary(ChangeInfo changeInfo, ViewHolder item) {
         boolean oldItem = false;
         if (changeInfo.newHolder == item) {
@@ -524,7 +529,6 @@ abstract public class BaseItemAnimator extends SimpleItemAnimator {
     }
 
     private void resetAnimation(ViewHolder holder) {
-        AnimatorCompatHelper.clearInterpolator(holder.itemView);
         endAnimation(holder);
     }
 
@@ -648,12 +652,15 @@ abstract public class BaseItemAnimator extends SimpleItemAnimator {
 
     private static class VpaListenerAdapter implements ViewPropertyAnimatorListener {
         @Override
-        public void onAnimationStart(View view) {}
+        public void onAnimationStart(View view) {
+        }
 
         @Override
-        public void onAnimationEnd(View view) {}
+        public void onAnimationEnd(View view) {
+        }
 
         @Override
-        public void onAnimationCancel(View view) {}
+        public void onAnimationCancel(View view) {
+        }
     }
 }
