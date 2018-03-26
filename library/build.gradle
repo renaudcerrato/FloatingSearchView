@@ -1,5 +1,4 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.github.dcendents.android-maven'
 
 android {
     compileSdkVersion compile_sdk_version
@@ -9,7 +8,7 @@ android {
         minSdkVersion min_sdk_version
         targetSdkVersion target_sdk_version
         versionCode 1
-        versionName "1.1.0"
+        versionName "1.1.1"
     }
     buildTypes {
         release {
