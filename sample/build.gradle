@@ -4,13 +4,13 @@ plugins {
 }
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    compileSdk 32
+    //buildToolsVersion "23.0.2"
 
     defaultConfig {
         applicationId "com.mypopsy.floatingsearchview.demo"
-        minSdkVersion 15
-        targetSdkVersion 23
+        minSdkVersion 21
+        targetSdk 32
         versionCode 1
         versionName "1.0"
         buildConfigField "String", "PROJECT_URL", '"https://github.com/renaudcerrato/FloatingSearchView"'
