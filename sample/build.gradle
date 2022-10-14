@@ -1,5 +1,7 @@
-apply plugin: 'com.android.application'
-apply plugin: 'com.neenbedankt.android-apt'
+plugins {
+    id 'com.android.application'
+    id 'com.neenbedankt.android-apt'
+}
 
 android {
     compileSdkVersion 23
@@ -25,22 +27,22 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile project(':library')
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(':library')
     // Support
-    compile 'com.android.support:appcompat-v7:23.1.1'
-    compile 'com.android.support:design:23.1.1'
+    implementation 'com.android.support:appcompat-v7:23.1.1'
+    implementation 'com.android.support:design:23.1.1'
     // ToggleDrawable
-    compile 'com.github.renaudcerrato:ToggleDrawable:1.0.1'
+    implementation 'com.github.renaudcerrato:ToggleDrawable:1.0.1'
     // Retrofit
-    compile 'com.squareup.retrofit:retrofit:2.0.0-beta2'
-    compile 'com.squareup.retrofit:converter-gson:2.0.0-beta2'
-    compile 'com.squareup.retrofit:adapter-rxjava:2.0.0-beta2'
-    compile 'com.squareup.okhttp:logging-interceptor:2.7.0'
+    implementation 'com.squareup.retrofit:retrofit:2.0.0-beta2'
+    implementation 'com.squareup.retrofit:converter-gson:2.0.0-beta2'
+    implementation 'com.squareup.retrofit:adapter-rxjava:2.0.0-beta2'
+    implementation 'com.squareup.okhttp:logging-interceptor:2.7.0'
     // RxJava
-    compile 'io.reactivex:rxandroid:1.1.0'
+    implementation 'io.reactivex:rxandroid:1.1.0'
     // Dagger
-    compile 'com.google.dagger:dagger:2.0.2'
+    implementation 'com.google.dagger:dagger:2.0.2'
     apt 'com.google.dagger:dagger-compiler:2.0.2'
     provided 'org.glassfish:javax.annotation:10.0-b28'
 }
