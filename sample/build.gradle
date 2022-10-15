@@ -29,9 +29,9 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':library')
-    // Support
-    implementation 'com.android.support:appcompat-v7:23.1.1'
-    implementation 'com.android.support:design:23.1.1'
+    // AndroidX
+    implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation 'com.google.android.material:material:1.6.1'
     // ToggleDrawable
     implementation 'com.github.renaudcerrato:ToggleDrawable:1.0.1'
     // Retrofit
