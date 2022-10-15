@@ -27,8 +27,8 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.IntDef;
-import android.support.annotation.NonNull;
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import android.util.Log;
 
 import java.lang.annotation.Retention;
@@ -50,7 +50,7 @@ public class RoundRectDrawableWithShadow extends Drawable {
     @IntDef(value = {LEFT, RIGHT, TOP, BOTTOM}, flag = true)
     public @interface Gravity {}
 
-    public static final int LEFT = 1 << 0;
+    public static final int LEFT = 1;
     public static final int TOP = 1 << 1;
     public static final int RIGHT = 1 << 2;
     public static final int BOTTOM = 1 << 3;
