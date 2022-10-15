@@ -1,6 +1,6 @@
 plugins {
     id 'com.android.application'
-    id 'com.neenbedankt.android-apt'
+//    id 'com.neenbedankt.android-apt'
 }
 
 android {
@@ -47,15 +47,16 @@ dependencies {
     annotationProcessor 'org.glassfish:javax.annotation:10.0-b28'
 }
 
-afterEvaluate { project ->
-    android.applicationVariants.each { variant ->
-
-        Task copyApk = task(("release" + variant.variantData.name.capitalize()), type:Copy) {
-            from variant.outputs[0].outputFile
-            destinationDir project.projectDir
-            dependsOn variant.assemble
-        }
-
-        variant.assemble.finalizedBy(copyApk)
-    }
-}
+//afterEvaluate { project ->
+//    android.applicationVariants.each { variant ->
+//
+//        task copyApk(type:Copy) {
+////           "release" + variant.buildType.name.capitalize()
+//            from variant.outputs[0].outputFile
+//            destinationDir project.projectDir
+//            dependsOn variant.assemble
+//        }
+//
+//        variant.assemble.finalizedBy(copyApk)
+//    }
+//}
