@@ -1,15 +1,16 @@
 package com.mypopsy.widget.internal;
 
-import android.graphics.Canvas;
-import android.graphics.Rect;
-import android.support.annotation.ColorInt;
-import android.support.v4.view.ViewCompat;
-import android.support.v7.widget.RecyclerView;
-import android.view.View;
-
 import static com.mypopsy.widget.internal.RoundRectDrawableWithShadow.BOTTOM;
 import static com.mypopsy.widget.internal.RoundRectDrawableWithShadow.LEFT;
 import static com.mypopsy.widget.internal.RoundRectDrawableWithShadow.RIGHT;
+
+import android.graphics.Canvas;
+import android.graphics.Rect;
+import android.view.View;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class SuggestionItemDecorator extends RecyclerView.ItemDecoration {
 
@@ -20,7 +21,7 @@ public class SuggestionItemDecorator extends RecyclerView.ItemDecoration {
     }
 
     @Override
-    public void getItemOffsets(Rect rect, View view, RecyclerView parent, RecyclerView.State state) {
+    public void getItemOffsets(@NonNull Rect rect, @NonNull View view, RecyclerView parent, RecyclerView.State state) {
         int position = parent.getChildAdapterPosition(view);
         int count = state.getItemCount();
         int shadows = LEFT|RIGHT;
@@ -30,18 +31,18 @@ public class SuggestionItemDecorator extends RecyclerView.ItemDecoration {
     }
 
     @Override
-    public void onDraw(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
+    public void onDraw(@NonNull Canvas canvas, RecyclerView parent, RecyclerView.State state) {
         int visibleCount = parent.getChildCount();
         int count = state.getItemCount();
-        RecyclerView.Adapter adapter = parent.getAdapter();
+        RecyclerView.Adapter<? extends RecyclerView.ViewHolder> adapter = (RecyclerView.Adapter<? extends RecyclerView.ViewHolder>) parent.getAdapter();
         int adapterCount = adapter != null ? adapter.getItemCount() : 0;
 
         for (int i = 0; i < visibleCount; i++) {
             View view = parent.getChildAt(i);
             int position = parent.getChildAdapterPosition(view);
-            float translationX = ViewCompat.getTranslationX(view);
-            float translationY = ViewCompat.getTranslationY(view);
-            float alpha = ViewCompat.getAlpha(view);
+            float translationX = view.getTranslationX();
+            float translationY = view.getTranslationY();
+            float alpha = view.getAlpha();
             RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) view.getLayoutParams();
 
             int shadows = LEFT|RIGHT;
