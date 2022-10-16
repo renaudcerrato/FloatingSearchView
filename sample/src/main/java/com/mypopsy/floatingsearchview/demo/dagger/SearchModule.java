@@ -8,7 +8,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import retrofit.Retrofit;
+import retrofit2.Retrofit;
 
 @Module
 public class SearchModule {
