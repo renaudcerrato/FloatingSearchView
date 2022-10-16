@@ -5,7 +5,7 @@ public class SearchCursor {
     public long estimatedResultCount;
     public String moreResultsUrl;
     public long currentPageIndex;
-    public Page pages[];
+    public Page[] pages;
 
     public static class Page {
         public String start;

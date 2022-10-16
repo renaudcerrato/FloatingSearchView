@@ -7,7 +7,7 @@ public class Response {
     public Data responseData;
 
     public static class Data {
-        public SearchResult results[];
+        public SearchResult[] results;
         public SearchCursor cursor;
     }
 }
