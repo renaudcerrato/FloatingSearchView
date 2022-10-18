@@ -11,5 +11,5 @@ import dagger.hilt.components.SingletonComponent;
 
 public interface GoogleSearchControllerEntryPoint {
 
-  public GoogleSearch getGoogleSearch();
+  GoogleSearch getGoogleSearch();
 }

@@ -22,9 +22,8 @@ public class RetrofitModule {
     OkHttpClient provideHttpClient() {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
-        OkHttpClient httpClient = new OkHttpClient();
-        httpClient.interceptors().add(logging);
-        return httpClient;
+        return new OkHttpClient.Builder()
+                .addInterceptor(logging).build();
     }
 
     @Provides
