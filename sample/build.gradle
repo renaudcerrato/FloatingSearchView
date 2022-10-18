@@ -13,12 +13,9 @@ android {
         targetSdk 32
         versionCode 1
         versionName "1.0"
-        buildConfigField "String", "PROJECT_URL", '"https://github.com/renaudcerrato/FloatingSearchView"'
     }
     buildTypes {
-        debug {
-            debuggable true
-        }
+        debug {debuggable true}
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -43,8 +40,8 @@ dependencies {
     implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'
     // Dagger
     implementation 'com.google.dagger:dagger:2.44'
-    annotationProcessor 'com.google.dagger:dagger-compiler:2.44'
-    annotationProcessor 'org.glassfish:javax.annotation:10.0-b28'
+//    annotationProcessor 'com.google.dagger:dagger-compiler:2.44'
+//    annotationProcessor 'org.glassfish:javax.annotation:10.0-b28'
 }
 
 //afterEvaluate { project ->

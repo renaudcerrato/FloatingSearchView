@@ -1,17 +1,12 @@
 package com.mypopsy.floatingsearchview.demo;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
-import android.support.v4.graphics.drawable.DrawableCompat;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.view.ViewPropertyAnimatorCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.ActionMenuView;
-import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
@@ -28,12 +23,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.graphics.drawable.DrawerArrowDrawable;
+import androidx.appcompat.widget.ActionMenuView;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.ViewPropertyAnimatorCompat;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.mypopsy.drawable.SearchArrowDrawable;
 import com.mypopsy.drawable.ToggleDrawable;
 import com.mypopsy.drawable.model.CrossModel;
 import com.mypopsy.drawable.util.Bezier;
 import com.mypopsy.floatingsearchview.demo.adapter.ArrayRecyclerAdapter;
-import com.mypopsy.floatingsearchview.demo.dagger.DaggerAppComponent;
 import com.mypopsy.floatingsearchview.demo.search.SearchController;
 import com.mypopsy.floatingsearchview.demo.search.SearchResult;
 import com.mypopsy.floatingsearchview.demo.utils.PackageUtils;
@@ -53,40 +56,32 @@ public class MainActivity extends AppCompatActivity implements
     private FloatingSearchView mSearchView;
     private SearchAdapter mAdapter;
 
-    @Inject
-    SearchController mSearch;
+    @Inject SearchController mSearch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        DaggerAppComponent.builder().build().inject(this);
+        //DaggerAppComponent.builder().build().inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         mSearch.setListener(this);
 
         mSearchView = (FloatingSearchView) findViewById(R.id.search);
-        mSearchView.setAdapter(mAdapter = new SearchAdapter());
+        mAdapter = new SearchAdapter();
+        mSearchView.setAdapter(mAdapter);
         mSearchView.showLogo(true);
         mSearchView.setItemAnimator(new CustomSuggestionItemAnimator(mSearchView));
 
-        updateNavigationIcon(R.id.menu_icon_search);
+        updateNavigationIcon("Search");
 
         mSearchView.showIcon(shouldShowNavigationIcon());
 
-        mSearchView.setOnIconClickListener(new FloatingSearchView.OnIconClickListener() {
-            @Override
-            public void onNavigationClick() {
-                // toggle
-                mSearchView.setActivated(!mSearchView.isActivated());
-            }
+        mSearchView.setOnIconClickListener(() -> {
+            // toggle
+            mSearchView.setActivated(!mSearchView.isActivated());
         });
 
-        mSearchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
-            @Override
-            public void onSearchAction(CharSequence text) {
-                mSearchView.setActivated(false);
-            }
-        });
+        mSearchView.setOnSearchListener(text -> mSearchView.setActivated(false));
 
         mSearchView.setOnMenuItemClickListener(this);
 
@@ -107,20 +102,17 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
 
-        mSearchView.setOnSearchFocusChangedListener(new FloatingSearchView.OnSearchFocusChangedListener() {
-            @Override
-            public void onFocusChanged(final boolean focused) {
-                boolean textEmpty = mSearchView.getText().length() == 0;
+        mSearchView.setOnSearchFocusChangedListener(focused -> {
+            boolean textEmpty = mSearchView.getText().length() == 0;
 
-                showClearButton(focused && !textEmpty);
-                if(!focused) showProgressBar(false);
-                mSearchView.showLogo(!focused && textEmpty);
+            showClearButton(focused && !textEmpty);
+            if(!focused) showProgressBar(false);
+            mSearchView.showLogo(!focused && textEmpty);
 
-                if (focused)
-                    mSearchView.showIcon(true);
-                else
-                    mSearchView.showIcon(shouldShowNavigationIcon());
-            }
+            if (focused)
+                mSearchView.showIcon(true);
+            else
+                mSearchView.showIcon(shouldShowNavigationIcon());
         });
 
         mSearchView.setText(null);
@@ -131,24 +123,27 @@ public class MainActivity extends AppCompatActivity implements
         mSearch.search(query);
     }
 
-    private void updateNavigationIcon(int itemId) {
+    private void updateNavigationIcon(String title) {
         Context context = mSearchView.getContext();
         Drawable drawable = null;
 
-        switch(itemId) {
-            case R.id.menu_icon_search:
+        switch(title) {
+            case "Search":
                 drawable = new SearchArrowDrawable(context);
                 break;
-            case R.id.menu_icon_drawer:
-                drawable = new android.support.v7.graphics.drawable.DrawerArrowDrawable(context);
+            case "Drawer":
+                drawable = new DrawerArrowDrawable(context);
                 break;
-            case R.id.menu_icon_custom:
+            case "Custom":
                 drawable = new CustomDrawable(context);
                 break;
         }
-        drawable = DrawableCompat.wrap(drawable);
-        DrawableCompat.setTint(drawable, ViewUtils.getThemeAttrColor(context, R.attr.colorControlNormal));
-        mSearchView.setIcon(drawable);
+
+        if (drawable != null) {
+            drawable = DrawableCompat.wrap(drawable);
+            DrawableCompat.setTint(drawable, ViewUtils.getThemeAttrColor(context, android.R.attr.colorControlNormal));
+            mSearchView.setIcon(drawable);
+        }
     }
 
     private boolean shouldShowNavigationIcon() {
@@ -159,14 +154,11 @@ public class MainActivity extends AppCompatActivity implements
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        switch (requestCode) {
-            case REQ_CODE_SPEECH_INPUT: {
-                if (resultCode == RESULT_OK && null != data) {
-                    ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                    mSearchView.setActivated(true);
-                    mSearchView.setText(result.get(0));
-                }
-                break;
+        if (requestCode == REQ_CODE_SPEECH_INPUT) {
+            if (resultCode == RESULT_OK && null != data) {
+                ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                mSearchView.setActivated(true);
+                mSearchView.setText(result.get(0));
             }
         }
     }
@@ -179,22 +171,23 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_clear:
+
+        switch ((String) item.getTitle()) {
+            case "Clear":
                 mSearchView.setText(null);
                 mSearchView.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
                 break;
-            case R.id.menu_toggle_icon:
+            case "Icon Visible":
                 item.setChecked(!item.isChecked());
                 mSearchView.showIcon(item.isChecked());
                 break;
-            case R.id.menu_tts:
+            case "Text to speech":
                 PackageUtils.startTextToSpeech(this, getString(R.string.speech_prompt), REQ_CODE_SPEECH_INPUT);
                 break;
-            case R.id.menu_icon_search:
-            case R.id.menu_icon_drawer:
-            case R.id.menu_icon_custom:
-                updateNavigationIcon(item.getItemId());
+            case"Search":
+            case "Drawer":
+            case "Custom":
+                updateNavigationIcon((String) item.getTitle());
                 Toast.makeText(MainActivity.this, item.getTitle(), Toast.LENGTH_SHORT).show();
                 break;
         }
@@ -206,6 +199,7 @@ public class MainActivity extends AppCompatActivity implements
         //nothing to do
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onSearchResults(SearchResult ...searchResults) {
         mAdapter.setNotifyOnChange(false);
@@ -236,7 +230,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void onGithubClick(View view) {
-        PackageUtils.start(this, Uri.parse(BuildConfig.PROJECT_URL));
+        PackageUtils.start(this, Uri.parse("https://github.com/renaudcerrato/FloatingSearchView"));
     }
 
     private static SearchResult getErrorResult(Throwable throwable) {
@@ -254,8 +248,9 @@ public class MainActivity extends AppCompatActivity implements
             setHasStableIds(true);
         }
 
+        @NonNull
         @Override
-        public SuggestionViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public SuggestionViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             if(inflater == null) inflater = LayoutInflater.from(parent.getContext());
             return new SuggestionViewHolder(inflater.inflate(R.layout.item_suggestion, parent, false));
         }
@@ -284,18 +279,8 @@ public class MainActivity extends AppCompatActivity implements
             url = (TextView) itemView.findViewById(R.id.url);
             left.setImageResource(R.drawable.ic_google);
             itemView.findViewById(R.id.text_container)
-                    .setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onItemClick(mAdapter.getItem(getAdapterPosition()));
-                }
-            });
-            right.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mSearchView.setText(text.getText());
-                }
-            });
+                    .setOnClickListener(v -> onItemClick(mAdapter.getItem(getBindingAdapterPosition())));
+            right.setOnClickListener(v -> mSearchView.setText(text.getText()));
         }
 
         void bind(SearchResult result) {
@@ -321,19 +306,19 @@ public class MainActivity extends AppCompatActivity implements
         @Override
         protected void preAnimateAdd(RecyclerView.ViewHolder holder) {
             if(!mSearchView.isActivated()) return;
-            ViewCompat.setTranslationX(holder.itemView, 0);
-            ViewCompat.setTranslationY(holder.itemView, -holder.itemView.getHeight());
-            ViewCompat.setAlpha(holder.itemView, 0);
+            holder.itemView.setTranslationX(0);
+            holder.itemView.setTranslationY(-holder.itemView.getHeight());
+            holder.itemView.setAlpha(0);
         }
 
         @Override
         protected ViewPropertyAnimatorCompat onAnimateAdd(RecyclerView.ViewHolder holder) {
             if(!mSearchView.isActivated()) return null;
             return ViewCompat.animate(holder.itemView)
-                    .translationY(0)
-                    .alpha(1)
-                    .setStartDelay((getAddDuration() / 2) * holder.getLayoutPosition())
-                    .setInterpolator(INTERPOLATOR_ADD);
+                             .translationY(0)
+                             .alpha(1)
+                             .setStartDelay((getAddDuration() / 2) * holder.getLayoutPosition())
+                             .setInterpolator(INTERPOLATOR_ADD);
         }
 
         @Override
