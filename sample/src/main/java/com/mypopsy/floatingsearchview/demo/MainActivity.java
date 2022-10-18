@@ -47,6 +47,9 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class MainActivity extends AppCompatActivity implements
         ActionMenuView.OnMenuItemClickListener,
         SearchController.Listener {

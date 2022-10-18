@@ -1,13 +1,18 @@
 package com.mypopsy.floatingsearchview.demo.search;
 
 
+import android.content.Context;
 import android.text.TextUtils;
+
+import com.mypopsy.floatingsearchview.demo.hilt.entrypoint.GoogleSearchControllerEntryPoint;
 
 import java.io.InterruptedIOException;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import dagger.hilt.android.EntryPointAccessors;
+import dagger.hilt.android.qualifiers.ApplicationContext;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Scheduler;
@@ -28,8 +33,9 @@ public class GoogleSearchController implements SearchController {
     private Listener mListener;
 
     @Inject
-    public GoogleSearchController(GoogleSearch search) {
-        mSearch = search;
+    public GoogleSearchController(@ApplicationContext Context context) {
+        GoogleSearchControllerEntryPoint entryPoint = EntryPointAccessors.fromApplication(context, GoogleSearchControllerEntryPoint.class);
+        mSearch = entryPoint.getGoogleSearch();
         mWorker = AndroidSchedulers.mainThread().createWorker();
     }
 

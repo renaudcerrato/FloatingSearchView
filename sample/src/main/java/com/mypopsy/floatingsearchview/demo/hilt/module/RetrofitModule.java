@@ -1,9 +1,11 @@
-package com.mypopsy.floatingsearchview.demo.dagger;
+package com.mypopsy.floatingsearchview.demo.hilt.module;
 
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import dagger.hilt.InstallIn;
+import dagger.hilt.components.SingletonComponent;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Converter;
@@ -11,6 +13,7 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+@InstallIn(SingletonComponent.class)
 @Module
 public class RetrofitModule {
 
