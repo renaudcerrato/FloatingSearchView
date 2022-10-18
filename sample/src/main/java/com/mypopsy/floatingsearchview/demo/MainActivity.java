@@ -204,7 +204,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @SuppressLint("NotifyDataSetChanged")
     @Override
-    public void onSearchResults(SearchResult ...searchResults) {
+    public void onSearchResults(SearchResult... searchResults) {
         mAdapter.setNotifyOnChange(false);
         mAdapter.clear();
         if (searchResults != null) mAdapter.addAll(searchResults);

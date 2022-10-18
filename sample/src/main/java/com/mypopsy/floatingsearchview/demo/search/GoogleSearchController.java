@@ -20,6 +20,7 @@ import rx.Observable;
 import rx.Subscription;
 import rx.functions.Action0;
 import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
 public class GoogleSearchController implements SearchController {
@@ -27,7 +28,7 @@ public class GoogleSearchController implements SearchController {
     private static final int DEFAULT_DEBOUNCE = 700; // milliseconds
 
     private final GoogleSearch mSearch;
-    private final Scheduler.@NonNull Worker mWorker;
+    private final @NonNull Scheduler.Worker mWorker;
     private final PublishSubject<String> mQuerySubject = PublishSubject.create();
     private Subscription mSubscription;
     private Listener mListener;
@@ -80,10 +81,11 @@ public class GoogleSearchController implements SearchController {
                                 return Observable.empty();
                             });
                 })
+                .observeOn(Schedulers.immediate())
 //                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(searchResults -> {
                     if(mListener != null) mListener.onSearchResults(searchResults);
-                });
+                }, this::notifyError);
     }
 
     private void notifyStarted(final String query) {
@@ -97,6 +99,6 @@ public class GoogleSearchController implements SearchController {
     }
 
     private void dispatchOnMainThread(Action0 action) {
-        mWorker.schedule((Runnable) action);
+        mWorker.schedule(action::call);
     }
 }
