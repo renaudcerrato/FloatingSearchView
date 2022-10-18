@@ -1,8 +1,11 @@
 plugins {
     id 'com.android.application'
+    id 'dagger.hilt.android.plugin'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
 //    id 'com.neenbedankt.android-apt'
 }
-
+apply plugin: 'kotlin-android'
 android {
     compileSdk 32
     //buildToolsVersion "23.0.2"
@@ -20,6 +23,13 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
     }
 }
 
@@ -40,6 +50,10 @@ dependencies {
     implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'
     // Dagger
     implementation 'com.google.dagger:dagger:2.44'
+    // Hilt
+    implementation "com.google.dagger:hilt-android:$hilt_version"
+
+    kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
 //    annotationProcessor 'com.google.dagger:dagger-compiler:2.44'
 //    annotationProcessor 'org.glassfish:javax.annotation:10.0-b28'
 }
