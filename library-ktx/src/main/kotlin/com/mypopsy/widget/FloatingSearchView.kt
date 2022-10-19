@@ -36,7 +36,7 @@ import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException
 
-class FloatingSearchView @JvmOverloads constructor( //TODO: Open this class
+class FloatingSearchView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyle: Int = R.attr.floatingSearchViewStyle)
@@ -72,7 +72,7 @@ class FloatingSearchView @JvmOverloads constructor( //TODO: Open this class
         }
 
         class LogoEditText@JvmOverloads constructor(context: Context,
-                                                            attrs: AttributeSet? = null, defStyle: Int = 0)
+                                                    attrs: AttributeSet? = null, defStyle: Int = 0)
             : AppCompatEditText(context, attrs, defStyle) {
             private var logo: Drawable? = null
             private var logoShown = false
