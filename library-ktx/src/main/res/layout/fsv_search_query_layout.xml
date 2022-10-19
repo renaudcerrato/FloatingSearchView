@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        style="@style/Widget.AppCompat.ActionButton"/>
+
+    <ImageButton
+        android:id="@+id/fsv_search_action_navigation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/Widget.AppCompat.ActionButton"/>
+
+    <view class="com.mypopsy.widget.FloatingSearchView$Companion$LogoEditText"
+        android:id="@+id/fsv_search_text"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:layout_marginStart="12dp"
+        android:singleLine="true"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:ellipsize="end"
+        android:inputType="textNoSuggestions"
+        android:background="@null"/>
+
+    <androidx.appcompat.widget.ActionMenuView
+        android:id="@+id/fsv_search_action_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"/>
+
+</LinearLayout>

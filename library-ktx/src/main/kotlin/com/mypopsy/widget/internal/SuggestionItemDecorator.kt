@@ -57,7 +57,7 @@ class SuggestionItemDecorator(private val drawable: RoundRectDrawableWithShadow)
     }
 
     fun setCornerRadius(radius: Float) {
-        drawable.setCornerRadius(radius)
+        drawable.cornerRadius = radius
     }
 
 }
