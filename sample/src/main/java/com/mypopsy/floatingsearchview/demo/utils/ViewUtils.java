@@ -3,7 +3,7 @@ package com.mypopsy.floatingsearchview.demo.utils;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.support.annotation.AttrRes;
+import androidx.annotation.AttrRes;
 import android.util.DisplayMetrics;
 
 /**

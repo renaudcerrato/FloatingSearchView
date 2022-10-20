@@ -1,6 +1,8 @@
 package com.mypopsy.floatingsearchview.demo.adapter;
 
-import android.support.v7.widget.RecyclerView;
+import android.annotation.SuppressLint;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,7 +18,7 @@ public abstract class ArrayRecyclerAdapter<T, VH extends RecyclerView.ViewHolder
      * Contains the list of objects that represent the data of this ArrayAdapter.
      * The content of this list is referred to as "the array" in the documentation.
      */
-    private List<T> mObjects;
+    private final List<T> mObjects;
     /**
      * Lock used to modify the content of {@link #mObjects}. Any write operation
      * performed on the array should be synchronized on this lock.
@@ -71,7 +73,8 @@ public abstract class ArrayRecyclerAdapter<T, VH extends RecyclerView.ViewHolder
      *
      * @param items The items to add at the end of the array.
      */
-    public void addAll(T ... items) {
+    @SafeVarargs
+    public final void addAll (T... items) {
         int start;
         synchronized (mLock) {
             start = getItemCount();
@@ -108,6 +111,7 @@ public abstract class ArrayRecyclerAdapter<T, VH extends RecyclerView.ViewHolder
     /**
      * Remove all elements from the list.
      */
+    @SuppressLint("NotifyDataSetChanged")
     public void clear() {
         synchronized (mLock) {
             mObjects.clear();
@@ -120,6 +124,7 @@ public abstract class ArrayRecyclerAdapter<T, VH extends RecyclerView.ViewHolder
      * @param comparator The comparator used to sort the objects contained
      *        in this adapter.
      */
+    @SuppressLint("NotifyDataSetChanged")
     public void sort(Comparator<? super T> comparator) {
         synchronized (mLock) {
             Collections.sort(mObjects, comparator);

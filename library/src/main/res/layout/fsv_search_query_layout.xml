@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <android.support.v4.widget.Space
+    <Space
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         style="@style/Widget.AppCompat.ActionButton"/>
@@ -20,7 +20,7 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:layout_marginLeft="12dp"
+        android:layout_marginStart="12dp"
         android:singleLine="true"
         android:maxLines="1"
         android:selectAllOnFocus="true"
@@ -28,7 +28,7 @@
         android:inputType="textNoSuggestions"
         android:background="@null"/>
 
-    <android.support.v7.widget.ActionMenuView
+    <androidx.appcompat.widget.ActionMenuView
         android:id="@+id/fsv_search_action_menu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

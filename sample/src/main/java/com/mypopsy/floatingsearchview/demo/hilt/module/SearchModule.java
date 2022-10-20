@@ -1,4 +1,4 @@
-package com.mypopsy.floatingsearchview.demo.dagger;
+package com.mypopsy.floatingsearchview.demo.hilt.module;
 
 import com.mypopsy.floatingsearchview.demo.search.GoogleSearch;
 import com.mypopsy.floatingsearchview.demo.search.GoogleSearchController;
@@ -8,8 +8,11 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import retrofit.Retrofit;
+import dagger.hilt.InstallIn;
+import dagger.hilt.components.SingletonComponent;
+import retrofit2.Retrofit;
 
+@InstallIn(SingletonComponent.class)
 @Module
 public class SearchModule {
 

@@ -5,10 +5,9 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.widget.Toast;
 
 import com.mypopsy.floatingsearchview.demo.R;
@@ -22,13 +21,11 @@ public class PackageUtils {
 
     static public void start(Context context,  @NonNull Uri uri) {
         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            Bundle extras = new Bundle();
-            extras.putBinder("android.support.customtabs.extra.SESSION", null);
-            intent.putExtras(extras);
-            intent.putExtra("android.support.customtabs.extra.TOOLBAR_COLOR",
-                    ViewUtils.getThemeAttrColor(context, R.attr.colorPrimary));
-        }
+        Bundle extras = new Bundle();
+        extras.putBinder("android.support.customtabs.extra.SESSION", null);
+        intent.putExtras(extras);
+        intent.putExtra("android.support.customtabs.extra.TOOLBAR_COLOR",
+                ViewUtils.getThemeAttrColor(context, android.R.attr.colorPrimary));
         try {
             context.startActivity(intent);
         }catch(ActivityNotFoundException e) {

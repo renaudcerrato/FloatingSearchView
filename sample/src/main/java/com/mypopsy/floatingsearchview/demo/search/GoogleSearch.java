@@ -1,8 +1,7 @@
 package com.mypopsy.floatingsearchview.demo.search;
 
-
-import retrofit.http.GET;
-import retrofit.http.Query;
+import retrofit2.http.GET;
+import retrofit2.http.Query;
 import rx.Observable;
 
 // https://developers.google.com/web-search/docs/?csw=1#API_Overview
